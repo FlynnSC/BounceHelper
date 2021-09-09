@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Sprites>
+
+  <bounceJellyfish path="objects/BounceHelper/bounceJellyfish/" start="idleR">
+    <Justify x="0.5" y="0.58"/>
+
+    <Loop id="idleB" path="blue/idle" delay="0.1"/>
+    <Loop id="heldB" path="blue/held" delay="0.1"/>
+    <Anim id="fallB" path="blue/fall" delay="0.06" goto="fallLoopB"/>
+    <Loop id="fallLoopB" path="blue/fallLoop" delay="0.06"/>
+    <Anim id="deathB" path="blue/death" delay="0.06"/>
+    
+    <Loop id="idleR" path="red/idle" delay="0.1"/>
+    <Loop id="heldR" path="red/held" delay="0.1"/>
+    <Anim id="fallR" path="red/fall" delay="0.06" goto="fallLoopR"/>
+    <Loop id="fallLoopR" path="red/fallLoop" delay="0.06"/>
+    <Anim id="deathR" path="red/death" delay="0.06"/>
+
+    <Loop id="idleP" path="pink/idle" delay="0.1"/>
+    <Loop id="heldP" path="pink/held" delay="0.1"/>
+    <Anim id="fallP" path="pink/fall" delay="0.06" goto="fallLoopP"/>
+    <Loop id="fallLoopP" path="pink/fallLoop" delay="0.06"/>
+    <Anim id="deathP" path="pink/death" delay="0.06"/>
+
+    <Loop id="idleF" path="flash/idle" delay="0.1"/>
+    <Loop id="heldF" path="flash/held" delay="0.1"/>
+    <Anim id="fallF" path="flash/fall" delay="0.06" goto="fallLoopF"/>
+    <Loop id="fallLoopF" path="flash/fallLoop" delay="0.06"/>
+    <Anim id="deathF" path="flash/death" delay="0.06"/>
+  </bounceJellyfish>
+
+  <swapBlockLightMoon path="objects/BounceHelper/bounceSwapblock/moon/" start="idle">
+    <Justify x="0.5" y="0.5"/>
+    <Loop id="idle" path="midBlock" delay="0.08" frames="0-3"/>
+  </swapBlockLightMoon>
+  <swapBlockLightRedMoon path="objects/BounceHelper/bounceSwapblock/moon/" start="idle">
+    <Justify x="0.5" y="0.5"/>
+    <Loop id="idle" path="midBlockRed" delay="0.08" frames="0-3"/>
+  </swapBlockLightRedMoon>
+</Sprites>
