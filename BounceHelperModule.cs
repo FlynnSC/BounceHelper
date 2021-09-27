@@ -208,25 +208,37 @@ namespace Celeste.Mod.BounceHelper {
         private void bounce(Player player, Vector2 bounceSpeed, int bounceStrength, Vector2 surfaceDir, bool dreamRipple = false, int wallCheckDistance = WallJumpCheckDist) {
             var playerData = getPlayerData(player);
 
+            Vector2 liftSpeed = player.LiftSpeed;
             Solid bouncedSolid = player.CollideFirst<Solid>(player.Position + surfaceDir * wallCheckDistance);
-            if (bouncedSolid != null) {
-
-                // Uses the player's lift speed in the situation in which the block has stopped moving, 
-                Vector2 liftSpeed = bouncedSolid.LiftSpeed == Vector2.Zero ? player.LiftSpeed : bouncedSolid.LiftSpeed;
-                liftSpeed.X = Math.Min(Math.Abs(liftSpeed.X), LiftXCap) * Math.Sign(liftSpeed.X);
-                liftSpeed.Y = Math.Min(Math.Abs(liftSpeed.Y), LiftYCap) * Math.Sign(liftSpeed.Y);
-                if (bounceSpeed.X == 0) {
-                    bounceSpeed.X = liftSpeed.X;
-                } else {
-                    bounceSpeed.X = Math.Max(Math.Abs(bounceSpeed.X + liftSpeed.X), Math.Abs(bounceSpeed.X)) * Math.Sign(bounceSpeed.X);
-                }
-
-                if (bounceSpeed.Y == 0) {
-                    bounceSpeed.Y = liftSpeed.Y;
-                } else {
-                    bounceSpeed.Y = Math.Max(Math.Abs(bounceSpeed.Y + liftSpeed.Y), Math.Abs(bounceSpeed.Y)) * Math.Sign(bounceSpeed.Y);
-                }
+            if (bouncedSolid != null && bouncedSolid.LiftSpeed != Vector2.Zero)
+            {
+                liftSpeed = bouncedSolid.LiftSpeed;
             }
+            liftSpeed.X = Math.Min(Math.Abs(liftSpeed.X), LiftXCap) * Math.Sign(liftSpeed.X);
+            liftSpeed.Y = Math.Min(Math.Abs(liftSpeed.Y), LiftYCap) * Math.Sign(liftSpeed.Y);
+            bounceSpeed.X = bounceSpeed.X == 0 ? liftSpeed.X : 
+                Math.Max(Math.Abs(bounceSpeed.X + liftSpeed.X), Math.Abs(bounceSpeed.X)) * Math.Sign(bounceSpeed.X);
+            bounceSpeed.Y = bounceSpeed.Y == 0 ? liftSpeed.Y :
+                Math.Max(Math.Abs(bounceSpeed.Y + liftSpeed.Y), Math.Abs(bounceSpeed.Y)) * Math.Sign(bounceSpeed.Y);
+
+            //if (bouncedSolid != null) {
+
+            //    // Uses the player's lift speed in the situation in which the block has stopped moving, 
+            //    Vector2 liftSpeed = bouncedSolid.LiftSpeed == Vector2.Zero ? player.LiftSpeed : bouncedSolid.LiftSpeed;
+            //    liftSpeed.X = Math.Min(Math.Abs(liftSpeed.X), LiftXCap) * Math.Sign(liftSpeed.X);
+            //    liftSpeed.Y = Math.Min(Math.Abs(liftSpeed.Y), LiftYCap) * Math.Sign(liftSpeed.Y);
+            //    if (bounceSpeed.X == 0) {
+            //        bounceSpeed.X = liftSpeed.X;
+            //    } else {
+            //        bounceSpeed.X = Math.Max(Math.Abs(bounceSpeed.X + liftSpeed.X), Math.Abs(bounceSpeed.X)) * Math.Sign(bounceSpeed.X);
+            //    }
+
+            //    if (bounceSpeed.Y == 0) {
+            //        bounceSpeed.Y = liftSpeed.Y;
+            //    } else {
+            //        bounceSpeed.Y = Math.Max(Math.Abs(bounceSpeed.Y + liftSpeed.Y), Math.Abs(bounceSpeed.Y)) * Math.Sign(bounceSpeed.Y);
+            //    }
+            //}
 
             if (Math.Abs(bounceSpeed.X) < Math.Abs(conservedHSpeed)) {
                 bounceSpeed.X += conservedHSpeed;
@@ -865,10 +877,9 @@ namespace Celeste.Mod.BounceHelper {
         #region Allows jellyfish to start dash during player dash game freeze
         private void modEngineUpdate(On.Monocle.Engine.orig_Update orig, Engine engine, GameTime gameTime) {
             orig(engine, gameTime);
-            if (enabled && Engine.FreezeTimer > 0f) {
+            if (enabled && Settings.JellyfishDash.Pressed) {
                 var engineData = new DynData<Engine>(engine);
-                BounceJellyfish jellyfish = engineData.Get<Scene>("scene").Tracker.GetEntity<BounceJellyfish>();
-                if (jellyfish != null && Settings.JellyfishDash.Pressed) {
+                foreach (BounceJellyfish jellyfish in engineData.Get<Scene>("scene").Tracker.GetEntities<BounceJellyfish>()) {
                     jellyfish.bufferDash();
                 }
             }

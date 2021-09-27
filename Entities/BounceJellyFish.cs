@@ -149,7 +149,7 @@ namespace Celeste.Mod.BounceHelper {
 		}
 
 		public void bufferDash() {
-			BounceHelperModule.Settings.JellyfishDash.ConsumePress();
+			//BounceHelperModule.Settings.JellyfishDash.ConsumePress();
 			dashBufferTimer = dashBufferTime;
 		}
 
@@ -255,9 +255,9 @@ namespace Celeste.Mod.BounceHelper {
 				#endregion
 
 				#region Dash activation + timer stuff + speed rings
-				if (BounceHelperModule.Settings.JellyfishDash.Pressed) {
-					bufferDash();
-				}
+				//if (BounceHelperModule.Settings.JellyfishDash.Pressed) {
+				//	bufferDash();
+				//}
 				if (dashBufferTimer > 0f && dashes > 0 && !Hold.IsHeld && dashCooldownTimer <= 0) {
 					Add(new Coroutine(dashCoroutine()));
 				}
