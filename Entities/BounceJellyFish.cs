@@ -106,12 +106,12 @@ namespace Celeste.Mod.BounceHelper {
 			}
 		}
 
-		public BounceJellyfish(Vector2 position, bool soulBound, int baseDashCount)
+		public BounceJellyfish(Vector2 position, bool platform, bool soulBound, int baseDashCount)
 			: base(position) {
 			this.soulBound = soulBound;
 			this.baseDashCount = baseDashCount;
 			dashes = baseDashCount;
-			this.platform = true;
+			this.platform = platform;
 			startPos = Position;
 			base.Collider = new Hitbox(8f, 10f, -4f, -10f);
 			onCollideH = OnCollideH;
@@ -135,11 +135,12 @@ namespace Celeste.Mod.BounceHelper {
 		}
 
 		public BounceJellyfish(EntityData e, Vector2 offset)
-			: this(e.Position + offset, e.Bool("soulBound", true), e.Int("baseDashCount", 1)) {
+			: this(e.Position + offset, e.Bool("platform", true), e.Bool("soulBound", true), e.Int("baseDashCount", 1)) {
 		}
 
 		public override void Added(Scene scene) {
 			base.Added(scene);
+			updateAnimationColor();
 			level = SceneAs<Level>();
 			foreach (BounceJellyfish entity in level.Tracker.GetEntities<BounceJellyfish>()) {
 				if (entity != this && entity.Hold.IsHeld) {
@@ -246,8 +247,7 @@ namespace Celeste.Mod.BounceHelper {
 							Speed = speed2 * 0.333f;
 							Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
 						}
-						Player player = level.Tracker.GetEntity<Player>();
-						player?.Die(-Vector2.UnitY);
+						killPlayer();
 						Add(new Coroutine(DestroyAnimationRoutine()));
 						return;
 					}
@@ -662,9 +662,7 @@ namespace Celeste.Mod.BounceHelper {
 			destroyed = true;
 			Collidable = false;
 			dashing = false;
-			if (soulBound) {
-				killPlayer();
-			}
+			killPlayer();
 			Audio.Play("event:/char/madeline/death", Position);
 			Add(new DeathEffect(dashColors[dashes], Center - Position));
 			sprite.Visible = false;
@@ -682,7 +680,7 @@ namespace Celeste.Mod.BounceHelper {
 
 		private void killPlayer() {
 			player = getPlayer();
-			if (player != null && !player.Dead) {
+			if (player != null && !player.Dead && soulBound) {
 				player.Die(-Vector2.UnitY);
 			}
 		}

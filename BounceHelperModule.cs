@@ -221,27 +221,10 @@ namespace Celeste.Mod.BounceHelper {
             bounceSpeed.Y = bounceSpeed.Y == 0 ? liftSpeed.Y :
                 Math.Max(Math.Abs(bounceSpeed.Y + liftSpeed.Y), Math.Abs(bounceSpeed.Y)) * Math.Sign(bounceSpeed.Y);
 
-            //if (bouncedSolid != null) {
-
-            //    // Uses the player's lift speed in the situation in which the block has stopped moving, 
-            //    Vector2 liftSpeed = bouncedSolid.LiftSpeed == Vector2.Zero ? player.LiftSpeed : bouncedSolid.LiftSpeed;
-            //    liftSpeed.X = Math.Min(Math.Abs(liftSpeed.X), LiftXCap) * Math.Sign(liftSpeed.X);
-            //    liftSpeed.Y = Math.Min(Math.Abs(liftSpeed.Y), LiftYCap) * Math.Sign(liftSpeed.Y);
-            //    if (bounceSpeed.X == 0) {
-            //        bounceSpeed.X = liftSpeed.X;
-            //    } else {
-            //        bounceSpeed.X = Math.Max(Math.Abs(bounceSpeed.X + liftSpeed.X), Math.Abs(bounceSpeed.X)) * Math.Sign(bounceSpeed.X);
-            //    }
-
-            //    if (bounceSpeed.Y == 0) {
-            //        bounceSpeed.Y = liftSpeed.Y;
-            //    } else {
-            //        bounceSpeed.Y = Math.Max(Math.Abs(bounceSpeed.Y + liftSpeed.Y), Math.Abs(bounceSpeed.Y)) * Math.Sign(bounceSpeed.Y);
-            //    }
-            //}
-
-            if (Math.Abs(bounceSpeed.X) < Math.Abs(conservedHSpeed)) {
-                bounceSpeed.X += conservedHSpeed;
+            if (Math.Abs(conservedHSpeed) > 0) {
+                if (Math.Abs(bounceSpeed.X) < Math.Abs(conservedHSpeed)) {
+                    bounceSpeed.X += conservedHSpeed;
+                }
                 conservedHSpeed = 0;
             }
             player.Speed = bounceSpeed;

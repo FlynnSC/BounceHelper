@@ -4,6 +4,7 @@ using ..Ahorn, Maple
 
 @mapdef Entity "BounceHelper/BounceJellyfish" BounceJellyfish(x::Integer, 
                                                               y::Integer,
+                                                              platform::Bool=true,
                                                               soulBound::Bool=true,
                                                               baseDashCount::Integer=1) 
 
@@ -31,8 +32,11 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::BounceJellyfish, ro
     sprite = sprites[Int(get(entity.data, "baseDashCount", 1))]
 
     Ahorn.drawSprite(ctx, sprite, 0, 0)
-    curve = Ahorn.SimpleCurve((-7, -1), (7, -1), (0, -6))
-    Ahorn.drawSimpleCurve(ctx, curve, (1.0, 1.0, 1.0, 1.0), thickness=1)
+    
+    if get(entity, "platform", true)
+        curve = Ahorn.SimpleCurve((-7, -1), (7, -1), (0, -6))
+        Ahorn.drawSimpleCurve(ctx, curve, (1.0, 1.0, 1.0, 1.0), thickness=1)
+    end
 end
 
 end
