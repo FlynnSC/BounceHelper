@@ -89,6 +89,7 @@ namespace Celeste.Mod.BounceHelper {
             On.Celeste.Player.ClimbCheck += modClimbCheck;
             On.Celeste.Player.ClimbJump += modClimbJump;
             Everest.Events.Level.OnEnter += onLevelEnter;
+            Everest.Events.CustomBirdTutorial.OnParseCommand += CustomBirdTutorial_OnParseCommand;
             #endregion
         }
 
@@ -133,6 +134,7 @@ namespace Celeste.Mod.BounceHelper {
             On.Celeste.Player.ClimbCheck -= modClimbCheck;
             On.Celeste.Player.ClimbJump -= modClimbJump;
             Everest.Events.Level.OnEnter -= onLevelEnter;
+            Everest.Events.CustomBirdTutorial.OnParseCommand -= CustomBirdTutorial_OnParseCommand;
             #endregion
         }
 
@@ -235,7 +237,7 @@ namespace Celeste.Mod.BounceHelper {
             foreach (Solid solid in player.CollideAll<Solid>(player.Position + surfaceDir * wallCheckDistance)) {
 
                 // Dream bounce
-                if (solid is DreamBlock) {
+                if (solid is DreamBlock && player.Inventory.DreamDash) {
                     if (!dreamBounced) {
                         player.Speed *= dreamBounceSpeedMult;
                         player.Play(SFX.char_bad_dreamblock_exit);
@@ -382,9 +384,9 @@ namespace Celeste.Mod.BounceHelper {
         #region Downwards floor bouncing + ceiling bouncing.
         private int modDashUpdate(On.Celeste.Player.orig_DashUpdate orig, Player player) {
             int state = orig(player);
+            var playerData = getPlayerData(player);
             if (enabled && Input.Jump.Pressed && (state == Player.StDash || cornerBounced)) {
-                if (player.DashDir == Vector2.UnitY && player.OnGround()) {
-                    cornerBounced = false;
+                if (player.DashDir == Vector2.UnitY && (playerData.Get<float>("jumpGraceTimer") > 0 || cornerBounced)) {
                     downwardBounce(player);
                     jellyfishBounceTimer = 0f;
                     state = Player.StNormal;
@@ -398,7 +400,9 @@ namespace Celeste.Mod.BounceHelper {
         }
 
         private void downwardBounce(Player player, bool jump = true) {
-            conservedHSpeed = player.Speed.X + Math.Sign(Input.MoveX) * JumpHBoost;
+            bool travellingFastHorizontally = Math.Abs(player.Speed.X) > 150f; 
+            conservedHSpeed = player.Speed.X + 
+                Math.Sign(travellingFastHorizontally ? player.Speed.X : Input.MoveX) * JumpHBoost;
             if (jump) {
                 player.Jump();
             } else {
@@ -407,6 +411,8 @@ namespace Celeste.Mod.BounceHelper {
             Vector2 bounceSpeed = downwardsBounceSpeed;
             Vector2 surfaceDir = Vector2.UnitY;
             int bounceStrength = perpendicularBounceStrength;
+            bool tempCornerBounced = cornerBounced;
+            cornerBounced = false;
             bounce(player, bounceSpeed, bounceStrength, surfaceDir, dreamRipple: true);
             player.Play(verticalBounceSound);
 
@@ -417,6 +423,12 @@ namespace Celeste.Mod.BounceHelper {
             var playerData = getPlayerData(player);
             if (playerData.Get<float>("dashRefillCooldownTimer") <= 0 && !player.Inventory.NoRefills) {
                 player.RefillDash();
+            }
+
+            // Helps maintain momentum when chaining a sideways bounce into a downwards bounce
+            if (!tempCornerBounced && travellingFastHorizontally) {
+                playerData["forceMoveX"] = player.Facing;
+                playerData["forceMoveXTimer"] = WallJumpForceTime;
             }
         }
 
@@ -554,7 +566,6 @@ namespace Celeste.Mod.BounceHelper {
                     } else if (wallLeft) {
                         playerWallJump.Invoke(player, new object[] { 1 });
                     }
-                    cornerBounced = false;
                     downwardBounce(player, jump: false);
                 } else {
                     if (jellyfishBounceDir.Y > 0) {
@@ -948,6 +959,14 @@ namespace Celeste.Mod.BounceHelper {
         private void onLevelEnter(Session session, bool fromSaveData)
         {
             enabled = session.GetFlag("bounceModeEnabled");
+        }
+
+        // Allows displaying the jellyfish dash keybind in the custom Everest bird tutorial
+        private object CustomBirdTutorial_OnParseCommand(string command) {
+            if (command == "BounceHelperJellyfishDash") {
+                return Settings.JellyfishDash.Button;
+            }
+            return null;
         }
 
         private DynData<Player> getPlayerData(Player player) {

@@ -361,7 +361,10 @@ namespace Celeste.Mod.BounceHelper {
 						List<Entity> solids = CollideAll<Solid>(Position + Vector2.UnitY);
 						foreach (Solid solid in solids) {
 							if (solid is BounceZipMover) {
-								(solid as BounceZipMover).activate();
+								var mover = solid as BounceZipMover;
+								if (mover.moon) {
+									mover.activate();
+								}
                             }
                         }
                         #endregion
@@ -376,7 +379,6 @@ namespace Celeste.Mod.BounceHelper {
 							Speed.Y = Calc.Approach(Speed.Y, level.Wind.Y < 0f ? 0f : maxFallSpeed, airDecelerationY * Engine.DeltaTime);
 						}
                         #endregion
-
                     }
 
                     #region Movement and level bounds collision
@@ -533,14 +535,19 @@ namespace Celeste.Mod.BounceHelper {
 				} else {
 					Speed.X = 0;
                 }
-				Speed += data.Hit.LiftSpeed;
+				if (!(data.Hit is DashSwitch)) {
+					Speed += data.Hit.LiftSpeed;
+				}
 
 				if (dashing) {
 					bounce(data.Direction, data.Hit);
 				}
 
 				if (data.Hit is BounceZipMover) {
-					(data.Hit as BounceZipMover).activate();
+					var mover = data.Hit as BounceZipMover;
+					if (mover.moon) {
+						mover.activate();
+					}
 				}
 			} else {
 				Speed.X = 0;
@@ -565,7 +572,10 @@ namespace Celeste.Mod.BounceHelper {
 				}
 
 				if (data.Hit is BounceZipMover) {
-					(data.Hit as BounceZipMover).activate();
+					var mover = data.Hit as BounceZipMover;
+					if (mover.moon) {
+						mover.activate();
+					}
 				}
 			} else {
 				Speed.Y = 0;
