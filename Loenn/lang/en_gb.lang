@@ -1,0 +1,69 @@
+# -- Mod Names --
+mods.BounceHelper.name=Bounce Helper
+
+
+
+# -- Entities --
+
+
+# -- Bounce Bumper --
+entities.BounceHelper/BounceBumper.placements.name.normal=Bounce Bumper
+entities.BounceHelper/BounceBumper.placements.description.normal=A Bumper that sets dashes to zero when touched.
+
+# -- Bounce Dream Block --
+entities.BounceHelper/BounceDreamBlock.placements.name.normal=Bounce Dream Block
+entities.BounceHelper/BounceDreamBlock.placements.description.normal=Windy Dream Block with customizable speeds.
+entities.BounceHelper/BounceDreamBlock.attributes.description.internalAccelX=How strongly the dream block pushes the player horizontally.
+entities.BounceHelper/BounceDreamBlock.attributes.description.internalAccelY=How strongly the dream block pushes the player vertically.
+entities.BounceHelper/BounceDreamBlock.attributes.description.oscillationDuration=The time it takes for the dream block travel. Needs a node.
+
+# -- Bounce Jellyfish --
+entities.BounceHelper/BounceJellyfish.placements.name.normal=Bounce Jellyfish
+entities.BounceHelper/BounceJellyfish.placements.name.single=Bounce Jellyfish (One Dash)
+entities.BounceHelper/BounceJellyfish.placements.name.double=Bounce Jellyfish (Two Dashes)
+entities.BounceHelper/BounceJellyfish.placements.description.normal=A Jellyfish compatible with Bounce Mode.
+entities.BounceHelper/BounceJellyfish.placements.description.single=Bounce Mode exclusive jellyfish that can dash.
+entities.BounceHelper/BounceJellyfish.placements.description.double=Bounce Mode exclusive jellyfish that can dash twice.
+entities.BounceHelper/BounceJellyfish.attributes.description.platform=Whether the jelly starts floating.
+entities.BounceHelper/BounceJellyfish.attributes.description.soulBound=Whether the jelly kills the player on death and can't be left behind.
+entities.BounceHelper/BounceJellyfish.attributes.description.baseDashCount=How many dashes the jelly will start with and refill to.
+
+# -- Bounce Move Block --
+entities.BounceHelper/BounceMoveBlock.placements.name.normal=Bounce Move Block
+entities.BounceHelper/BounceMoveBlock.placements.name.unknown=Bounce Move Block (Unknown)
+entities.BounceHelper/BounceMoveBlock.placements.description.normal=Customizable Move Block that can be hit off-course via bounces.
+entities.BounceHelper/BounceMoveBlock.placements.description.unknown=Bounce Move Block that can only be activated by bounces, going in the direction opposite of the side bounced on.
+entities.BounceHelper/BounceMoveBlock.attributes.description.direction=Which direction the move block will move on activation.
+entities.BounceHelper/BounceMoveBlock.attributes.description.speed=How fast the move block will move. Use negative values for accelerating. (Vanilla Values: 60 and 75)
+
+# -- Bounce Refill --
+entities.BounceHelper/BounceRefill.placements.name.normal=Bounce Refill
+entities.BounceHelper/BounceRefill.placements.name.double=Bounce Refill (Two Dashes)
+entities.BounceHelper/BounceRefill.placements.description.normal=Refill that can also refill the Bounce Jellyfish.
+entities.BounceHelper/BounceRefill.placements.description.double=Two Dashes Refill that can also refill the Bounce Jellyfish.
+entities.BounceHelper/BounceRefill.attributes.description.twoDash=Whether the refill should give two dashes.
+entities.BounceHelper/BounceRefill.attributes.description.oneUse=Whether the refill should respawn after use.
+
+# -- Bounce Swap Block --
+entities.BounceHelper/BounceSwapBlock.placements.name.normal=Bounce Swap Block
+entities.BounceHelper/BounceSwapBlock.placements.name.moon=Bounce Swap Block (Moon)
+entities.BounceHelper/BounceSwapBlock.placements.description.normal=Refill charged Swap Block, bounces will refill dash while disabling the block.
+entities.BounceHelper/BounceSwapBlock.placements.description.moon=Bounce Swap Block that only responds to the Bounce Jellyfish
+entities.BounceHelper/BounceSwapBlock.attributes.description.moon=Whether the moon variant is used. Requires Bounce Jellyfish to function.
+
+# -- Bounce Zip Mover --
+entities.BounceHelper/BounceZipMover.placements.name.normal=Bounce Zip Mover
+entities.BounceHelper/BounceZipMover.placements.name.moon=Bounce Zip Mover (Moon)
+entities.BounceHelper/BounceZipMover.placements.description.normal=Zip Mover that can be activated by wall jumps.
+entities.BounceHelper/BounceZipMover.placements.description.moon=Bounce Zip Mover that only responds to the Bounce Jellyfish.
+entities.BounceHelper/BounceZipMover.attributes.description.moon=Whether the moon variant is used. Requires Bounce Jellyfish to function.
+
+
+
+# -- Triggers --
+
+
+# -- Bounce Mode Trigger --
+triggers.BounceHelper/BounceHelperTrigger.placements.name.normal=Bounce Helper Trigger
+triggers.BounceHelper/BounceHelperTrigger.placements.description.normal=Enables/disables Bounce Helper's Bounce Mode, which is needed for everything Bounce Helper.
+triggers.BounceHelper/BounceHelperTrigger.attributes.description.enable=Whether to enable/disable Bounce Mode upon entering the trigger.
