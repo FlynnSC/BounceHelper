@@ -6,6 +6,16 @@ local BounceHelperBounceJellyfish = {}
 
 BounceHelperBounceJellyfish.name = "BounceHelper/BounceJellyfish"
 BounceHelperBounceJellyfish.depth = -5
+local BounceHelperBounceJellyfishDashCounts = {
+    0, 1, 2
+}
+
+BounceHelperBounceJellyfish.fieldInformation = {
+    baseDashCount = {
+        options = BounceHelperBounceJellyfishDashCounts,
+        editable = false
+    }
+}
 BounceHelperBounceJellyfish.placements = {
     {
         name = "normal",

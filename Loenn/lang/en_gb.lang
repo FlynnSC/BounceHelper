@@ -64,6 +64,8 @@ entities.BounceHelper/BounceZipMover.attributes.description.moon=Whether the moo
 
 
 # -- Bounce Mode Trigger --
-triggers.BounceHelper/BounceHelperTrigger.placements.name.normal=Bounce Helper Trigger
-triggers.BounceHelper/BounceHelperTrigger.placements.description.normal=Enables/disables Bounce Helper's Bounce Mode, which is needed for everything Bounce Helper.
+triggers.BounceHelper/BounceHelperTrigger.placements.name.normal=Bounce Helper Mode (Enable)
+triggers.BounceHelper/BounceHelperTrigger.placements.name.disable=Bounce Helper Mode (Disable)
+triggers.BounceHelper/BounceHelperTrigger.placements.description.normal=Enables Bounce Helper's Bounce Mode, needed for everything Bounce Helper.
+triggers.BounceHelper/BounceHelperTrigger.placements.description.disable=Disables Bounce Helper's Bounce Mode, turning everything back to normal.
 triggers.BounceHelper/BounceHelperTrigger.attributes.description.enable=Whether to enable/disable Bounce Mode upon entering the trigger.

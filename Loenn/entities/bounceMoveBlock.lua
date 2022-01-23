@@ -12,6 +12,13 @@ local BounceHelperBounceMoveBlockDirections = {
     "Up", "UpRight", "Right", "DownRight", "Down", "DownLeft", "Left", "UpLeft", "Unknown"
 }
 
+BounceHelperBounceMoveBlock.fieldInformation = {
+    direction = {
+        options = BounceHelperBounceMoveBlockDirections,
+        editable = false
+    }
+}
+
 BounceHelperBounceMoveBlock.placements = {
     {
         name = "normal",

@@ -4,5 +4,7 @@ namespace Celeste.Mod.BounceHelper {
     public class BounceHelperSettings : EverestModuleSettings {
         [DefaultButtonBinding(Buttons.LeftShoulder, Keys.Space)]
         public ButtonBinding JellyfishDash { get; set; }
+
+        public bool ForceBounceMode { get; set; }
     }
 }
