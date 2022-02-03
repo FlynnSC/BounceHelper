@@ -219,6 +219,7 @@ namespace Celeste.Mod.BounceHelper {
 		private float cornerClippedTimer = 0f;
 		private float cornerClippedResetTime = 0.1f;
 
+		private bool oneUse;
 		private bool beganUnknown;
 		private Vector2 targetOffset = Vector2.Zero;
 		private const float bounceLerpRate = 4f;
@@ -232,13 +233,14 @@ namespace Celeste.Mod.BounceHelper {
 
 		private Vector2 moveLiftSpeed = Vector2.Zero;
 
-		public BounceMoveBlock(Vector2 position, int width, int height, Directions direction, float speed)
+		public BounceMoveBlock(Vector2 position, int width, int height, Directions direction, float speed, bool oneUse)
 			: base(position, width, height, safe: false) {
 			base.Depth = -1;
 			startPosition = position;
 			this.direction = direction;
 			beganUnknown = direction == Directions.Unknown;
 			targetSpeed = speed;
+			this.oneUse = oneUse;
 			directionVector = Calc.AngleToVector(-(float)direction * (float)Math.PI / 4, 1);
 			if (Math.Abs(directionVector.X) < 0.5f) {
 				directionVector.X = 0;
@@ -264,7 +266,8 @@ namespace Celeste.Mod.BounceHelper {
 		}
 
 		public BounceMoveBlock(EntityData data, Vector2 offset)
-			: this(data.Position + offset, data.Width, data.Height, data.Enum("direction", Directions.Left), data.Float("speed", 60f)) {
+			: this(data.Position + offset, data.Width, data.Height, data.Enum("direction", Directions.Left),
+				  data.Float("speed", 60f), data.Bool("oneUse", false)) {
 		}
 
 		public override void Awake(Scene scene) {
@@ -486,6 +489,10 @@ namespace Celeste.Mod.BounceHelper {
 				DisableStaticMovers();
 				Position = startPosition;
 				Visible = (Collidable = false);
+				if (oneUse) {
+					yield break;
+				}
+
 				yield return regenWaitTime;
 				foreach (Debris d2 in debris) {
 					d2.StopMoving();
