@@ -40,10 +40,8 @@ namespace Celeste.Mod.BounceHelper {
         private const float ThrowRecoil = 80f;
         private const float LiftXCap = 250f;
         private const float LiftYCap = 130f;
-        private const float PickupTime = 0.16f; 
+        private const float PickupTime = 0.16f;
         #endregion
-
-        private static DynData<Player> _playerData;
 
         #region Setup
         public BounceHelperModule() {
@@ -91,7 +89,7 @@ namespace Celeste.Mod.BounceHelper {
             On.Celeste.Player.ClimbCheck += modClimbCheck;
             On.Celeste.Player.ClimbJump += modClimbJump;
             On.Celeste.Player.DashBegin += modDashBegin;
-            Everest.Events.Level.OnEnter += onLevelEnter;
+            On.Celeste.Level.Begin += onLevelBegin;
             Everest.Events.CustomBirdTutorial.OnParseCommand += CustomBirdTutorial_OnParseCommand;
             #endregion
         }
@@ -137,7 +135,7 @@ namespace Celeste.Mod.BounceHelper {
             On.Celeste.Player.ClimbCheck -= modClimbCheck;
             On.Celeste.Player.ClimbJump -= modClimbJump;
             On.Celeste.Player.DashBegin -= modDashBegin;
-            Everest.Events.Level.OnEnter -= onLevelEnter;
+            On.Celeste.Level.Begin -= onLevelBegin;
             Everest.Events.CustomBirdTutorial.OnParseCommand -= CustomBirdTutorial_OnParseCommand;
             #endregion
         }
@@ -220,7 +218,7 @@ namespace Celeste.Mod.BounceHelper {
             }
             liftSpeed.X = Math.Min(Math.Abs(liftSpeed.X), LiftXCap) * Math.Sign(liftSpeed.X);
             liftSpeed.Y = Math.Min(Math.Abs(liftSpeed.Y), LiftYCap) * Math.Sign(liftSpeed.Y);
-            bounceSpeed.X = bounceSpeed.X == 0 ? liftSpeed.X : 
+            bounceSpeed.X = bounceSpeed.X == 0 ? liftSpeed.X :
                 Math.Max(Math.Abs(bounceSpeed.X + liftSpeed.X), Math.Abs(bounceSpeed.X)) * Math.Sign(bounceSpeed.X);
             bounceSpeed.Y = bounceSpeed.Y == 0 ? liftSpeed.Y :
                 Math.Max(Math.Abs(bounceSpeed.Y + liftSpeed.Y), Math.Abs(bounceSpeed.Y)) * Math.Sign(bounceSpeed.Y);
@@ -246,7 +244,7 @@ namespace Celeste.Mod.BounceHelper {
                         player.Play(SFX.char_bad_jump_dreamblock);
                         player.Play(SFX.game_gen_crystalheart_bounce);
 
-                        Level level = playerData["level"] as Level;
+                        Level level = player.SceneAs<Level>();
                         foreach (ParticleType particle in dreamBounceParticles) {
                             level.Particles.Emit(particle, 2, player.Center + 4 * surfaceDir, Vector2.One * 4, player.Speed.Angle());
                         }
@@ -294,11 +292,11 @@ namespace Celeste.Mod.BounceHelper {
                 }
             }
 
-            playerData["varJumpSpeed"] = player.Speed.Y;
-            playerData["varJumpTimer"] = SuperWallJumpVarTime;
-            playerData["launched"] = true;
-            playerData["gliderBoostTimer"] = DashGliderBoostTime;
-            playerData["gliderBoostDir"] = Vector2.Normalize(player.Speed);
+            playerData.Set("varJumpSpeed", player.Speed.Y);
+            playerData.Set("varJumpTimer", SuperWallJumpVarTime);
+            playerData.Set("launched", true);
+            playerData.Set("gliderBoostTimer", DashGliderBoostTime);
+            playerData.Set("gliderBoostDir", Vector2.Normalize(player.Speed));
 
             // Only creates one slash and trail when corner bouncing
             //if (!(player.DashDir == Vector2.UnitY && surfaceDir.Y == 0 && player.OnGround())) {
@@ -368,14 +366,14 @@ namespace Celeste.Mod.BounceHelper {
                 if (holeBounced) {
 
                     // Fixes hole bouncing weirdness
-                    playerData["forceMoveXTimer"] = 0;
+                    playerData.Set("forceMoveXTimer", 0);
                     holeBounced = false;
                 } else {
 
                     // Disabling neutral jump
-                    playerData["forceMoveX"] = dir;
+                    playerData.Set("forceMoveX", dir);
                     float forceMoveXTimer = player.Holding != null && player.Holding.SlowFall ? GliderWallJumpForceTime : WallJumpForceTime;
-                    playerData["forceMoveXTimer"] = forceMoveXTimer;
+                    playerData.Set("forceMoveXTimer", forceMoveXTimer);
                 }
             } else {
                 orig(player, dir);
@@ -402,8 +400,8 @@ namespace Celeste.Mod.BounceHelper {
         }
 
         private void downwardBounce(Player player, bool jump = true) {
-            bool travellingFastHorizontally = Math.Abs(player.Speed.X) > 150f; 
-            conservedHSpeed = player.Speed.X + 
+            bool travellingFastHorizontally = Math.Abs(player.Speed.X) > 150f;
+            conservedHSpeed = player.Speed.X +
                 Math.Sign(travellingFastHorizontally ? player.Speed.X : Input.MoveX) * JumpHBoost;
             if (jump) {
                 player.Jump();
@@ -429,8 +427,8 @@ namespace Celeste.Mod.BounceHelper {
 
             // Helps maintain momentum when chaining a sideways bounce into a downwards bounce
             if (!tempCornerBounced && travellingFastHorizontally) {
-                playerData["forceMoveX"] = player.Facing;
-                playerData["forceMoveXTimer"] = WallJumpForceTime;
+                playerData.Set("forceMoveX", player.Facing);
+                playerData.Set("forceMoveXTimer", WallJumpForceTime);
             }
         }
 
@@ -593,7 +591,7 @@ namespace Celeste.Mod.BounceHelper {
                 // Fixes bug with normal holdables
                 var playerData = getPlayerData(player);
                 if (!player.OnGround() && player.Holding != null) {
-                    playerData["holdCannotDuck"] = (float)Input.MoveY == 1f;
+                    playerData.Set("holdCannotDuck", (float)Input.MoveY == 1f);
                 }
             }
             return state;
@@ -629,7 +627,7 @@ namespace Celeste.Mod.BounceHelper {
         }
 
         // Starts from the left, rotates clockwise.
-        private DashResult[] dashResults = { 
+        private DashResult[] dashResults = {
             DashResult.DASH, // Left
             DashResult.DASH, // UpLeft
             DashResult.DASH, // Up
@@ -673,7 +671,7 @@ namespace Celeste.Mod.BounceHelper {
             if (isEnabled) {
                 // Stops being able to trigger ridables by grabbing
                 var playerData = getPlayerData(player);
-                playerData["climbTriggerDir"] = 0;
+                playerData.Set("climbTriggerDir", 0);
 
                 bool attach = false;
                 if (player.Speed.Y >= 0) {
@@ -705,7 +703,7 @@ namespace Celeste.Mod.BounceHelper {
         private const float jellyfishSlowfallSpeedMult = 40f / 24;
 
         #region Alters throw behaviour
-        // Removes horizontal throw recoil for jellyfish 
+        // Removes horizontal throw recoil for jellyfish
         // Thrown jellyfish maintains player's momentum
         // Allows full directional throwing
         // Throwing downwards or diagonally downwards will give the player an upwards boost of speed
@@ -718,8 +716,8 @@ namespace Celeste.Mod.BounceHelper {
                 } else {
                     if (throwDir.Y > 0) {
                         player.Speed.Y = Math.Min(player.Speed.Y, throwDir.Y * downwardThrowRecoil);
-                        playerData["varJumpSpeed"] = player.Speed.Y;
-                        playerData["varJumpTimer"] = VarJumpTime;
+                        playerData.Set("varJumpSpeed", player.Speed.Y);
+                        playerData.Set("varJumpTimer", VarJumpTime);
                         player.AutoJump = true;
                         throwDir.Y *= 2f;
                         throwDir.X *= 0.5f;
@@ -737,7 +735,7 @@ namespace Celeste.Mod.BounceHelper {
 
                     // Removes the ability to create a theocopter with downthrows
                     if (!player.Holding.SlowFall && throwDir.Y > 0) {
-                        new DynData<Holdable>(player.Holding)["cannotHoldTimer"] = 0.2f;
+                        DynamicData.For(player.Holding).Set("cannotHoldTimer", 0.2f);
                     }
                 }
                 player.Holding = null;
@@ -781,7 +779,7 @@ namespace Celeste.Mod.BounceHelper {
         #endregion
 
         #region Alters pickup behaviour
-        // Allows downwards momentum to be conserved 
+        // Allows downwards momentum to be conserved
         // Eliminates the grab animation wait time
         // Allows jellyfish dashes and bounces to transfer momentum unto the player in the same way that player dashes and bounces can
         private IEnumerator modPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player player) {
@@ -793,14 +791,14 @@ namespace Celeste.Mod.BounceHelper {
                 Vector2 begin = player.Holding.Entity.Position - player.Position;
                 Vector2 carryOffsetTarget = playerData.Get<Vector2>("CarryOffsetTarget");
                 SimpleCurve curve = new SimpleCurve(
-                    end: carryOffsetTarget, 
-                    control: new Vector2(begin.X + (float)(Math.Sign(begin.X) * 2), carryOffsetTarget.Y - 2f), 
+                    end: carryOffsetTarget,
+                    control: new Vector2(begin.X + (float)(Math.Sign(begin.X) * 2), carryOffsetTarget.Y - 2f),
                     begin: begin
                 );
-                playerData["carryOffset"] = begin;
+                playerData.Set("carryOffset", begin);
                 Tween tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeInOut, PickupTime, start: true);
                 tween.OnUpdate = delegate (Tween t) {
-                    playerData["carryOffset"] = curve.GetPoint(t.Eased);
+                    playerData.Set("carryOffset", curve.GetPoint(t.Eased));
                 };
                 player.Add(tween);
                 player.StateMachine.State = 0;
@@ -850,21 +848,21 @@ namespace Celeste.Mod.BounceHelper {
                         Audio.Play("event:/Bio/jellyfish_pickup_shortened", player.Position);
                     }
                     if (player.OnGround() && (int)Input.MoveY == 1) {
-                        playerData["holdCannotDuck"] = true;
+                        playerData.Set("holdCannotDuck", true);
                     }
 
                     // Allows jellyfish dash initiated dream dashing
                     if (player.Holding.Entity is BounceJellyfish jellyfish3 &&
                         jellyfish3.dashAttackTimer > playerData.Get<float>("dashAttackTimer")
                     ) {
-                        playerData["dashAttackTimer"] = jellyfish3.dashAttackTimer;
+                        playerData.Set("dashAttackTimer", jellyfish3.dashAttackTimer);
                         player.DashDir = jellyfish3.dashDir;
                     }
                 }
                 float pickupTimeIncrement = 0.007f; // Value tuned such that you can't glitch holdables into walls
-                playerData["minHoldTimer"] = PickupTime + pickupTimeIncrement;
+                playerData.Set("minHoldTimer", PickupTime + pickupTimeIncrement);
 
-                playerData["forceMoveXTimer"] = jellyfishWallJumpForceTimer;
+                playerData.Set("forceMoveXTimer", jellyfishWallJumpForceTimer);
                 yield break;
             } else {
                 IEnumerator origEnum = orig(player);
@@ -897,8 +895,7 @@ namespace Celeste.Mod.BounceHelper {
         private void modEngineUpdate(On.Monocle.Engine.orig_Update orig, Engine engine, GameTime gameTime) {
             orig(engine, gameTime);
             if (isEnabled && Settings.JellyfishDash.Pressed) {
-                var engineData = new DynData<Engine>(engine);
-                foreach (BounceJellyfish jellyfish in engineData.Get<Scene>("scene").Tracker.GetEntities<BounceJellyfish>()) {
+                foreach (BounceJellyfish jellyfish in Engine.Scene.Tracker.GetEntities<BounceJellyfish>()) {
                     jellyfish.bufferDash();
                 }
             }
@@ -990,9 +987,9 @@ namespace Celeste.Mod.BounceHelper {
             }
         }
 
-        private void onLevelEnter(Session session, bool fromSaveData)
-        {
-            enabled = session.GetFlag("bounceModeEnabled");
+        private void onLevelBegin(On.Celeste.Level.orig_Begin orig, Level self) {
+            orig(self);
+            enabled = self.Session.GetFlag("bounceModeEnabled");
         }
 
         // Allows displaying the jellyfish dash keybind in the custom Everest bird tutorial
@@ -1003,11 +1000,11 @@ namespace Celeste.Mod.BounceHelper {
             return null;
         }
 
-        private DynData<Player> getPlayerData(Player player) {
+        private DynamicData getPlayerData(Player player) {
             //if (_playerData != null && _playerData.Get<Level>("level") != null) {
             //    return _playerData;
             //}
-            return _playerData = new DynData<Player>(player);
+            return DynamicData.For(player);
         }
 
         public static void log(string str) {
