@@ -90,6 +90,7 @@ namespace Celeste.Mod.BounceHelper {
             #region Misc
             On.Celeste.Player.ClimbCheck += modClimbCheck;
             On.Celeste.Player.ClimbJump += modClimbJump;
+            On.Celeste.Player.DashBegin += modDashBegin;
             Everest.Events.Level.OnEnter += onLevelEnter;
             Everest.Events.CustomBirdTutorial.OnParseCommand += CustomBirdTutorial_OnParseCommand;
             #endregion
@@ -135,6 +136,7 @@ namespace Celeste.Mod.BounceHelper {
             #region Misc
             On.Celeste.Player.ClimbCheck -= modClimbCheck;
             On.Celeste.Player.ClimbJump -= modClimbJump;
+            On.Celeste.Player.DashBegin -= modDashBegin;
             Everest.Events.Level.OnEnter -= onLevelEnter;
             Everest.Events.CustomBirdTutorial.OnParseCommand -= CustomBirdTutorial_OnParseCommand;
             #endregion
@@ -259,7 +261,7 @@ namespace Celeste.Mod.BounceHelper {
                 // Zip mover activation
                 if (solid is BounceZipMover) {
                     BounceZipMover mover = solid as BounceZipMover;
-                    if (!mover.moon || player.Holding != null) {
+                    if (!mover.moon || (player.Holding != null && player.Holding.SlowFall)) {
                         mover.activate();
                     }
                 }
@@ -353,7 +355,7 @@ namespace Celeste.Mod.BounceHelper {
                     foreach (Solid solid in player.CollideAll<Solid>(player.Position + Vector2.UnitX * -dir * WallJumpCheckDist)) {
                         if (solid is BounceZipMover) {
                             BounceZipMover mover = solid as BounceZipMover;
-                            if (!mover.moon || player.Holding != null) {
+                            if (!mover.moon || (player.Holding != null && player.Holding.SlowFall)) {
                                 mover.activate();
                             }
                         }
@@ -603,6 +605,8 @@ namespace Celeste.Mod.BounceHelper {
 
         // Decreases the jellyfishBounceTimer and jellyfishWallJumpTimer
         private void modUpdate(On.Celeste.Player.orig_Update orig, Player player) {
+            var playerData = getPlayerData(player);
+            enabled = playerData.Get<Level>("level").Session.GetFlag("bounceModeEnabled");
             orig(player);
             if (jellyfishBounceTimer > 0f) {
                 jellyfishBounceTimer -= Engine.DeltaTime;
@@ -751,7 +755,7 @@ namespace Celeste.Mod.BounceHelper {
                 var playerData = getPlayerData(player);
                 BounceJellyfish jellyfish = playerData.Get<Level>("level").Tracker.GetEntity<BounceJellyfish>();
                 if (jellyfish != null && !jellyfish.destroyed && jellyfish.soulBound) {
-                    jellyfish.die();
+                    jellyfish.die(playSound: direction != Vector2.Zero);
                 }
             }
             return body;
@@ -974,6 +978,15 @@ namespace Celeste.Mod.BounceHelper {
                 playerWallJump.Invoke(player, new object[] { -(int)player.Facing });
             } else {
                 orig(player);
+            }
+        }
+
+        // Fixes wierd bug with getting a vertical boost after cancelling a bounce with a dash
+        private void modDashBegin(On.Celeste.Player.orig_DashBegin orig, Player player) {
+            orig(player);
+            if (isEnabled) {
+                var playerData = getPlayerData(player);
+                playerData["varJumpTimer"] = 0;
             }
         }
 

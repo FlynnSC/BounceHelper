@@ -143,7 +143,7 @@ namespace Celeste.Mod.BounceHelper {
 			updateAnimationColor();
 			level = SceneAs<Level>();
 			foreach (BounceJellyfish entity in level.Tracker.GetEntities<BounceJellyfish>()) {
-				if (entity != this && entity.Hold.IsHeld) {
+				if (entity != this && entity.Hold.IsHeld && soulBound) {
 					RemoveSelf();
 				}
 			}
@@ -160,7 +160,11 @@ namespace Celeste.Mod.BounceHelper {
 			wasRedDash = dashes == 0;
 			updateAnimationColor();
 
-			var playerData = new DynData<Player>(getPlayer());
+			var player = getPlayer();
+			if (player == null) { 
+				yield break;
+			}
+			var playerData = new DynData<Player>(player);
 			dashDir = playerData.Get<Vector2>("lastAim");
 			Speed = dashSpeed * dashDir;
 			boostTimer = boostTime;
@@ -508,7 +512,9 @@ namespace Celeste.Mod.BounceHelper {
 			if (hit is BounceSwapBlock) {
 				BounceSwapBlock swapBlock = hit as BounceSwapBlock;
 				if (swapBlock.moon && swapBlock.onBounce(Speed.Angle())) {
-					refillDash();
+					// Allows jellies with a base dash count of 0 to still steal the essence if they have a dash
+					// from a refill
+					refillDash(Math.Max(baseDashCount, 1));
                 }
             }
 
@@ -668,12 +674,14 @@ namespace Celeste.Mod.BounceHelper {
 			RemoveSelf();
 		}
 
-		public void die() {
+		public void die(bool playSound = true) {
 			destroyed = true;
 			Collidable = false;
 			dashing = false;
 			killPlayer();
-			Audio.Play("event:/char/madeline/death", Position);
+			if (playSound) {
+				Audio.Play("event:/char/madeline/death", Position);
+			}
 			Add(new DeathEffect(dashColors[dashes], Center - Position));
 			sprite.Visible = false;
 			Depth = -1000000;

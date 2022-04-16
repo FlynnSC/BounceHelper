@@ -282,7 +282,7 @@ namespace Celeste.Mod.BounceHelper {
 						break;
                     } else {
 						Player player = GetPlayerRider();
-						if (player != null && (!moon || player.Holding != null)) {
+						if (player != null && (!moon || (player.Holding != null && player.Holding.SlowFall))) {
 							break;
                         }
                     }
