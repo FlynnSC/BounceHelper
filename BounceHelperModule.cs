@@ -88,7 +88,7 @@ namespace Celeste.Mod.BounceHelper {
             #region Misc
             On.Celeste.Player.ClimbCheck += modClimbCheck;
             On.Celeste.Player.ClimbJump += modClimbJump;
-            Everest.Events.Level.OnEnter += onLevelEnter;
+            On.Celeste.Level.Begin += onLevelBegin;
             Everest.Events.CustomBirdTutorial.OnParseCommand += CustomBirdTutorial_OnParseCommand;
             #endregion
         }
@@ -133,7 +133,7 @@ namespace Celeste.Mod.BounceHelper {
             #region Misc
             On.Celeste.Player.ClimbCheck -= modClimbCheck;
             On.Celeste.Player.ClimbJump -= modClimbJump;
-            Everest.Events.Level.OnEnter -= onLevelEnter;
+            On.Celeste.Level.Begin -= onLevelBegin;
             Everest.Events.CustomBirdTutorial.OnParseCommand -= CustomBirdTutorial_OnParseCommand;
             #endregion
         }
@@ -974,9 +974,9 @@ namespace Celeste.Mod.BounceHelper {
             }
         }
 
-        private void onLevelEnter(Session session, bool fromSaveData)
-        {
-            enabled = session.GetFlag("bounceModeEnabled");
+        private void onLevelBegin(On.Celeste.Level.orig_Begin orig, Level self) {
+            orig(self);
+            enabled = self.Session.GetFlag("bounceModeEnabled");
         }
 
         // Allows displaying the jellyfish dash keybind in the custom Everest bird tutorial
