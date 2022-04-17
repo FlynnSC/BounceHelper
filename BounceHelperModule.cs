@@ -983,7 +983,7 @@ namespace Celeste.Mod.BounceHelper {
             orig(player);
             if (isEnabled) {
                 var playerData = getPlayerData(player);
-                playerData["varJumpTimer"] = 0;
+                playerData.Set("varJumpTimer",  0);
             }
         }
 
