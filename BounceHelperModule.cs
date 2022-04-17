@@ -16,9 +16,9 @@ namespace Celeste.Mod.BounceHelper {
 
         public static SpriteBank spriteBank;
 
-        public static bool enabled = false;
+        public static Session session = null;
 
-        private static bool isEnabled { get => enabled || Settings.ForceBounceMode; }
+        private static bool isEnabled { get => (session != null && session.GetFlag("bounceModeEnabled")) || Settings.ForceBounceMode; }
 
         #region Vanilla constants
         private const float DashSpeed = 240f;
@@ -603,8 +603,6 @@ namespace Celeste.Mod.BounceHelper {
 
         // Decreases the jellyfishBounceTimer and jellyfishWallJumpTimer
         private void modUpdate(On.Celeste.Player.orig_Update orig, Player player) {
-            var playerData = getPlayerData(player);
-            enabled = playerData.Get<Level>("level").Session.GetFlag("bounceModeEnabled");
             orig(player);
             if (jellyfishBounceTimer > 0f) {
                 jellyfishBounceTimer -= Engine.DeltaTime;
@@ -987,9 +985,9 @@ namespace Celeste.Mod.BounceHelper {
             }
         }
 
-        private void onLevelBegin(On.Celeste.Level.orig_Begin orig, Level self) {
-            orig(self);
-            enabled = self.Session.GetFlag("bounceModeEnabled");
+        private void onLevelBegin(On.Celeste.Level.orig_Begin orig, Level level) {
+            orig(level);
+            session = level.Session;
         }
 
         // Allows displaying the jellyfish dash keybind in the custom Everest bird tutorial

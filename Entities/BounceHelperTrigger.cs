@@ -15,7 +15,6 @@ namespace Celeste.Mod.BounceHelper {
         public override void OnEnter(Player player) {
             base.OnEnter(player);
             SceneAs<Level>().Session.SetFlag("bounceModeEnabled", enable);
-            BounceHelperModule.enabled = enable;
         }
     }
 }
