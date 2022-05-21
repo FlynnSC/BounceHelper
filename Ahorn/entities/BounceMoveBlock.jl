@@ -8,7 +8,8 @@ using ..Ahorn, Maple
                                                               height::Integer=Maple.defaultBlockHeight,
                                                               direction::String="Right", 
                                                               speed::Number=60.0,
-                                                              oneUse::Bool=false) 
+                                                              oneUse::Bool=false,
+                                                              activationFlag::String="") 
 
 directions = String[
     "Right",

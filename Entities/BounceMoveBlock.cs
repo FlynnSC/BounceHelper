@@ -207,6 +207,8 @@ namespace Celeste.Mod.BounceHelper {
 		private SoundSource moveSfx;
 
 		public bool triggered;
+		public string activationFlag;
+		private Level level;
 
 		private static readonly Color idleBgFill = Calc.HexToColor("474070");
 		private static readonly Color pressedBgFill = Calc.HexToColor("30b335");
@@ -233,7 +235,7 @@ namespace Celeste.Mod.BounceHelper {
 
 		private Vector2 moveLiftSpeed = Vector2.Zero;
 
-		public BounceMoveBlock(Vector2 position, int width, int height, Directions direction, float speed, bool oneUse)
+		public BounceMoveBlock(Vector2 position, int width, int height, Directions direction, float speed, bool oneUse, string activationFlag)
 			: base(position, width, height, safe: false) {
 			base.Depth = -1;
 			startPosition = position;
@@ -241,6 +243,7 @@ namespace Celeste.Mod.BounceHelper {
 			beganUnknown = direction == Directions.Unknown;
 			targetSpeed = speed;
 			this.oneUse = oneUse;
+			this.activationFlag = activationFlag;
 			directionVector = Calc.AngleToVector(-(float)direction * (float)Math.PI / 4, 1);
 			if (Math.Abs(directionVector.X) < 0.5f) {
 				directionVector.X = 0;
@@ -267,12 +270,13 @@ namespace Celeste.Mod.BounceHelper {
 
 		public BounceMoveBlock(EntityData data, Vector2 offset)
 			: this(data.Position + offset, data.Width, data.Height, data.Enum("direction", Directions.Left),
-				  data.Float("speed", 60f), data.Bool("oneUse", false)) {
+				  data.Float("speed", 60f), data.Bool("oneUse", false), data.Attr("activationFlag")) {
 		}
 
 		public override void Awake(Scene scene) {
 			base.Awake(scene);
 			scene.Add(border = new Border(this));
+			level = scene as Level;
 		}
 
 		public void activate() {
@@ -327,7 +331,21 @@ namespace Celeste.Mod.BounceHelper {
                 #region Idle and triggering
                 triggered = false;
 				state = MovementState.Idling;
-				while (!triggered && !HasPlayerRider() || direction == Directions.Unknown) {
+				while (true) {
+                    if (direction != Directions.Unknown) { 
+						if (triggered || HasPlayerRider()) {
+							break;
+						}
+						if (activationFlag != "" && level.Session.GetFlag(activationFlag)) {
+							level.Session.SetFlag(activationFlag, false);
+							foreach (BounceMoveBlock block in level.Tracker.GetEntities<BounceMoveBlock>()) { 
+								if (block.activationFlag == activationFlag) {
+									block.triggered = true;
+								}
+							}
+							break;
+						}
+					}
 					yield return null;
 				}
 				Audio.Play("event:/game/04_cliffside/arrowblock_activate", Position);

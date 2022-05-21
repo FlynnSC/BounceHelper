@@ -27,7 +27,8 @@ BounceHelperBounceMoveBlock.placements = {
             height = 16,
             direction = "Right",
             speed = 60,
-            oneUse = false
+            oneUse = false,
+            activationFlag = ""
         }
     },
     {
@@ -37,7 +38,8 @@ BounceHelperBounceMoveBlock.placements = {
             height = 16,
             direction = "Unknown",
             speed = 60,
-            oneUse = false
+            oneUse = false,
+            activationFlag = ""
         }
     }
 }
