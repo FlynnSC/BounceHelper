@@ -601,7 +601,8 @@ namespace Celeste.Mod.BounceHelper {
             return jellyfishBounceTimer > 0f && player.Holding != null;
         }
 
-        // Decreases the jellyfishBounceTimer and jellyfishWallJumpTimer
+        // Decreases the jellyfishBounceTimer and jellyfishWallJumpTimer, and stops the playing climbing if entering 
+        // bounce mode while climbing
         private void modUpdate(On.Celeste.Player.orig_Update orig, Player player) {
             orig(player);
             if (jellyfishBounceTimer > 0f) {
@@ -609,6 +610,9 @@ namespace Celeste.Mod.BounceHelper {
             }
             if (jellyfishWallJumpForceTimer > 0f) {
                 jellyfishWallJumpForceTimer -= Engine.DeltaTime;
+            }
+            if (isEnabled && player.StateMachine.State == Player.StClimb) {
+                player.StateMachine.State = Player.StNormal;
             }
         }
 
