@@ -20,6 +20,7 @@ namespace Celeste.Mod.BounceHelper {
 
 		private bool twoDashes;
 		private bool oneUse;
+		private bool jellyfishOnly;
 		public int dashes;
 
 		private ParticleType p_shatter;
@@ -28,24 +29,47 @@ namespace Celeste.Mod.BounceHelper {
 
 		private float respawnTimer;
 
-		public BounceRefill(Vector2 position, bool twoDashes, bool oneUse)
+		public BounceRefill(Vector2 position, bool twoDashes, bool oneUse, bool jellyfishOnly)
 			: base(position) {
 			base.Collider = new Hitbox(16f, 16f, -8f, -8f);
-			Add(new PlayerCollider(OnPlayer));
+			if (!jellyfishOnly) {
+				Add(new PlayerCollider(OnPlayer));
+			}
 			this.twoDashes = twoDashes;
 			this.oneUse = oneUse;
+			this.jellyfishOnly = jellyfishOnly;
 			dashes = twoDashes ? 2 : 1;
 			string str;
-			if (twoDashes) {
-				str = "objects/refillTwo/";
-				p_shatter = Refill.P_ShatterTwo;
-				p_regen = Refill.P_RegenTwo;
-				p_glow = Refill.P_GlowTwo;
-			} else {
-				str = "objects/refill/";
-				p_shatter = Refill.P_Shatter;
-				p_regen = Refill.P_Regen;
-				p_glow = Refill.P_Glow;
+			if (jellyfishOnly) { 
+				if (twoDashes) {
+					str = "objects/BounceHelper/bounceRefillJellyfishOnly/refillTwo/";
+					p_shatter = Refill.P_ShatterTwo;
+					p_regen = Refill.P_RegenTwo;
+					p_glow = Refill.P_GlowTwo;
+				} else {
+					str = "objects/BounceHelper/bounceRefillJellyfishOnly/refill/";
+					p_shatter = Refill.P_Shatter;
+					p_shatter.Color = Calc.HexToColor("ffd4d4");
+					p_shatter.Color2 = Calc.HexToColor("fc8686");
+					p_regen = Refill.P_Regen;
+					p_regen.Color = Calc.HexToColor("FFA6CC");
+					p_regen.Color2 = Calc.HexToColor("e06e6e");
+					p_glow = Refill.P_Glow;
+					p_glow.Color = p_regen.Color;
+					p_glow.Color2 = p_regen.Color2;
+				}
+			} else { 
+				if (twoDashes) {
+					str = "objects/refillTwo/";
+					p_shatter = Refill.P_ShatterTwo;
+					p_regen = Refill.P_RegenTwo;
+					p_glow = Refill.P_GlowTwo;
+				} else {
+					str = "objects/refill/";
+					p_shatter = Refill.P_Shatter;
+					p_regen = Refill.P_Regen;
+					p_glow = Refill.P_Glow;
+				}
 			}
 			Add(outline = new Image(GFX.Game[str + "outline"]));
 			outline.CenterOrigin();
@@ -75,7 +99,7 @@ namespace Celeste.Mod.BounceHelper {
 		}
 
 		public BounceRefill(EntityData data, Vector2 offset)
-			: this(data.Position + offset, data.Bool("twoDash"), data.Bool("oneUse")) {
+			: this(data.Position + offset, data.Bool("twoDash"), data.Bool("oneUse"), data.Bool("jellyfishOnly")) {
 		}
 
 		public override void Added(Scene scene) {

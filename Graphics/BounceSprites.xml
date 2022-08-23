@@ -16,11 +16,23 @@
     <Loop id="fallLoopR" path="red/fallLoop" delay="0.06"/>
     <Anim id="deathR" path="red/death" delay="0.06"/>
 
+    <Loop id="idleRH" path="redHead/idle" delay="0.1"/>
+    <Loop id="heldRH" path="redHead/held" delay="0.1"/>
+    <Anim id="fallRH" path="redHead/fall" delay="0.06" goto="fallLoopRH"/>
+    <Loop id="fallLoopRH" path="redHead/fallLoop" delay="0.06"/>
+    <Anim id="deathRH" path="redHead/death" delay="0.06"/>
+
     <Loop id="idleP" path="pink/idle" delay="0.1"/>
     <Loop id="heldP" path="pink/held" delay="0.1"/>
     <Anim id="fallP" path="pink/fall" delay="0.06" goto="fallLoopP"/>
     <Loop id="fallLoopP" path="pink/fallLoop" delay="0.06"/>
     <Anim id="deathP" path="pink/death" delay="0.06"/>
+
+    <Loop id="idlePH" path="pinkHead/idle" delay="0.1"/>
+    <Loop id="heldPH" path="pinkHead/held" delay="0.1"/>
+    <Anim id="fallPH" path="pinkHead/fall" delay="0.06" goto="fallLoopPH"/>
+    <Loop id="fallLoopPH" path="pinkHead/fallLoop" delay="0.06"/>
+    <Anim id="deathPH" path="pinkHead/death" delay="0.06"/>
 
     <Loop id="idleF" path="flash/idle" delay="0.1"/>
     <Loop id="heldF" path="flash/held" delay="0.1"/>

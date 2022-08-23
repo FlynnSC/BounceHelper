@@ -9,7 +9,8 @@ using ..Ahorn, Maple
                                                               direction::String="Right", 
                                                               speed::Number=60.0,
                                                               oneUse::Bool=false,
-                                                              activationFlag::String="") 
+                                                              activationFlag::String="",
+                                                              spritePath::String="objects/BounceHelper/bounceMoveBlock") 
 
 directions = String[
     "Right",
@@ -45,15 +46,15 @@ midColor = (4, 3, 23) ./ 255
 highlightColor = (59, 50, 101) ./ 255
 
 const arrows = Dict{String, String}(
-    "Right" => "objects/moveBlock/arrow00",
-	"UpRight" => "objects/moveBlock/arrow01",
-	"Up" => "objects/moveBlock/arrow02",
-	"UpLeft" => "objects/moveBlock/arrow03",
-	"Left" => "objects/moveBlock/arrow04",
-	"DownLeft" => "objects/moveBlock/arrow05",
-	"Down" => "objects/moveBlock/arrow06",
-	"DownRight" => "objects/moveBlock/arrow07",
-	"Unknown" => "objects/BounceHelper/bounceMoveBlock/unknown"
+    "Right" => "/arrow00",
+	"UpRight" => "/arrow01",
+	"Up" => "/arrow02",
+	"UpLeft" => "/arrow03",
+	"Left" => "/arrow04",
+	"DownLeft" => "/arrow05",
+	"Down" => "/arrow06",
+	"DownRight" => "/arrow07",
+	"Unknown" => "/unknown"
 )
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::BounceMoveBlock, room::Maple.Room)
@@ -68,9 +69,10 @@ function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::BounceMoveBlock, ro
     tilesHeight = div(height, 8)
 
     direction = get(entity.data, "direction", "Right")
-    arrowSprite = Ahorn.getSprite(arrows[direction], "Gameplay")
+    spritePath = get(entity.data, "spritePath", "objects/BounceHelper/bounceMoveBlock")
+    arrowSprite = Ahorn.getSprite(spritePath * arrows[direction], "Gameplay")
 
-    frame = "objects/moveBlock/base"
+    frame = spritePath * "/base"
 
     Ahorn.drawRectangle(ctx, 2, 2, width - 4, height - 4, highlightColor, highlightColor)
     Ahorn.drawRectangle(ctx, 8, 8, width - 16, height - 16, midColor)

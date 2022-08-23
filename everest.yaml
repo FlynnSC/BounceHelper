@@ -1,5 +1,5 @@
 - Name: BounceHelper
-  Version: 1.4.1
+  Version: 1.5.0
   DLL: bin/Debug/BounceHelper.dll
   Dependencies:
     - Name: Everest

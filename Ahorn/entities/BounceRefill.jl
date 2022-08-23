@@ -5,7 +5,8 @@ using ..Ahorn, Maple
 @mapdef Entity "BounceHelper/BounceRefill" BounceRefill(x::Integer, 
                                                         y::Integer,
                                                         twoDash::Bool=false,
-                                                        oneUse::Bool=false)
+                                                        oneUse::Bool=false,
+                                                        jellyfishOnly::Bool=false)
 
 const placements = Ahorn.PlacementDict(
     "Bounce Refill (BounceHelper)" => Ahorn.EntityPlacement(
@@ -19,8 +20,10 @@ spriteTwoDash = "objects/refillTwo/idle00"
 
 function getSprite(entity::BounceRefill)
     twoDash = get(entity.data, "twoDash", false)
+    jellyfishOnly = get(entity.data, "jellyfishOnly", false)
 
-    return twoDash ? spriteTwoDash : spriteOneDash
+    prefix = jellyfishOnly ? "objects/BounceHelper/bounceRefillJellyfishOnly/" : "objects/"
+    return prefix * (twoDash ? "refillTwo/" : "refill/") * "idle00"
 end
 
 function Ahorn.selection(entity::BounceRefill)

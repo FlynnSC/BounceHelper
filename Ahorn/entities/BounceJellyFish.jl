@@ -6,7 +6,8 @@ using ..Ahorn, Maple
                                                               y::Integer,
                                                               platform::Bool=true,
                                                               soulBound::Bool=true,
-                                                              baseDashCount::Integer=1) 
+                                                              baseDashCount::Integer=1,
+                                                              ezelMode::Bool=false) 
 
 const placements = Ahorn.PlacementDict(
     "Bounce Jellyfish (Bounce Helper)" => Ahorn.EntityPlacement(
@@ -15,13 +16,13 @@ const placements = Ahorn.PlacementDict(
 )
 
 const sprites = Dict{Integer, String}(
-    0 => "objects/BounceHelper/bounceJellyfish/blue/idle0",
-	1 => "objects/BounceHelper/bounceJellyfish/red/idle0",
-	2 => "objects/BounceHelper/bounceJellyfish/pink/idle0",
+    0 => "blue",
+	1 => "red",
+	2 => "pink",
 )
 
 function Ahorn.selection(entity::BounceJellyfish)
-    sprite = sprites[Int(get(entity.data, "baseDashCount", 1))]
+    sprite = "objects/BounceHelper/bounceJellyfish/blue/idle0"
 
     x, y = Ahorn.position(entity)
 
@@ -29,7 +30,9 @@ function Ahorn.selection(entity::BounceJellyfish)
 end
 
 function Ahorn.render(ctx::Ahorn.Cairo.CairoContext, entity::BounceJellyfish, room::Maple.Room)
-    sprite = sprites[Int(get(entity.data, "baseDashCount", 1))]
+    baseDashCount = Int(get(entity.data, "baseDashCount", 1));
+    suffix = (get(entity, "ezelMode", false) && baseDashCount > 0) ? "Head/idle0" : "/idle0"; 
+    sprite = "objects/BounceHelper/bounceJellyfish/" * sprites[baseDashCount] * suffix;
 
     Ahorn.drawSprite(ctx, sprite, 0, 0)
     

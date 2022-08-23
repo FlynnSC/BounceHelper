@@ -22,7 +22,8 @@ BounceHelperBounceJellyfish.placements = {
         data = {
             platform = true,
             soulBound = false,
-            baseDashCount = 0
+            baseDashCount = 0,
+            ezelMode = false
         }
     },
     {
@@ -30,7 +31,8 @@ BounceHelperBounceJellyfish.placements = {
         data = {
             platform = true,
             soulBound = false,
-            baseDashCount = 1
+            baseDashCount = 1,
+            ezelMode = false
         }
     },
     {
@@ -38,7 +40,8 @@ BounceHelperBounceJellyfish.placements = {
         data = {
             platform = true,
             soulBound = false,
-            baseDashCount = 2
+            baseDashCount = 2,
+            ezelMode = false
         }
     }
 }
@@ -47,33 +50,32 @@ local function getColor(entity)
     local dash = entity.baseDashCount
 
     if dash == 0 then
-        return "objects/BounceHelper/bounceJellyfish/blue/idle0"
+        return "blue"
 
     elseif dash == 1 then
-        return "objects/BounceHelper/bounceJellyfish/red/idle0"
+        return "red"
 
     else
-        return "objects/BounceHelper/bounceJellyfish/pink/idle0"
+        return "pink"
     end
 end
 
 function BounceHelperBounceJellyfish.sprite(room, entity)
+    local suffix = (entity.ezelMode and entity.baseDashCount > 0) and "Head/idle0" or "/idle0"
+    local texture = "objects/BounceHelper/bounceJellyfish/" .. getColor(entity) .. suffix
+    local jellySprite = drawableSprite.fromTexture(texture, entity)
     local platform = entity.platform
 
     if entity.platform then
         local x, y = entity.x or 0, entity.y or 0
         local points = drawing.getSimpleCurve({x - 11, y - 1}, {x + 11, y - 1}, {x - 0, y - 6})
         local lineSprites = drawableLine.fromPoints(points):getDrawableSprite()
-        local texture = getColor(entity)
-        local jellySprite = drawableSprite.fromTexture(texture, entity)
 
         table.insert(lineSprites, 1, jellySprite)
 
         return lineSprites
-
     else
-        local texture = getColor(entity)
-        return drawableSprite.fromTexture(texture, entity)
+        return jellySprite
     end
 end
 

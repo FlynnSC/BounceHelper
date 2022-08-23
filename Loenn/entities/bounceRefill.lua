@@ -7,20 +7,23 @@ BounceHelperBounceRefill.placements = {
         name = "normal",
         data = {
             oneUse = false,
-            twoDash = false
+            twoDash = false,
+            jellyfishOnly = false
         }
     },
     {
         name = "double",
         data = {
             oneUse = false,
-            twoDash = true
+            twoDash = true,
+            jellyfishOnly = false
         }
     }
 }
 
 function BounceHelperBounceRefill.texture(room, entity)
-    return entity.twoDash and "objects/refillTwo/idle00" or "objects/refill/idle00"
+    local prefix = entity.jellyfishOnly and "objects/BounceHelper/bounceRefillJellyfishOnly/" or "objects/"
+    return prefix .. (entity.twoDash and "refillTwo/" or "refill/") .. "idle00"
 end
 
 return BounceHelperBounceRefill

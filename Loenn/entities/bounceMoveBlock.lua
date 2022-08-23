@@ -58,18 +58,17 @@ local midColor = {4 / 255, 3 / 255, 23 / 255}
 local highlightColor = {59 / 255, 50 / 255, 101 / 255}
 local buttonColor = {71 / 255, 64 / 255, 112 / 255}
 
-local frameTexture = "objects/moveBlock/base"
-local buttonTexture = "objects/moveBlock/button"
+local frameTexture = "/base"
 local arrowTextures = {
-    up = "objects/moveBlock/arrow02",
-    upright = "objects/moveBlock/arrow01",
-    right = "objects/moveBlock/arrow00",
-    downright = "objects/moveBlock/arrow07",
-    down = "objects/moveBlock/arrow06",
-    downleft = "objects/moveBlock/arrow05",
-    left = "objects/moveBlock/arrow04",
-    upleft = "objects/moveBlock/arrow03",
-    unknown = "objects/BounceHelper/bounceMoveBlock/unknown"
+    up = "/arrow02",
+    upright = "/arrow01",
+    right = "/arrow00",
+    downright = "/arrow07",
+    down = "/arrow06",
+    downleft = "/arrow05",
+    left = "/arrow04",
+    upleft = "/arrow03",
+    unknown = "/unknown"
 }
 
 function BounceHelperBounceMoveBlock.sprite(room, entity)
@@ -77,9 +76,10 @@ function BounceHelperBounceMoveBlock.sprite(room, entity)
     local width, height = entity.width or 24, entity.height or 24
 
     local direction = string.lower(entity.direction or "up")
+    local spritePath = entity.spritePath or "objects/BounceHelper/bounceMoveBlock"
 
-    local blockTexture = frameTexture
-    local arrowTexture = arrowTextures[direction] or arrowTextures["up"]
+    local blockTexture = spritePath .. frameTexture
+    local arrowTexture = spritePath .. (arrowTextures[direction] or arrowTextures["up"])
 
     local ninePatch = drawableNinePatch.fromTexture(blockTexture, ninePatchOptions, x, y, width, height)
 

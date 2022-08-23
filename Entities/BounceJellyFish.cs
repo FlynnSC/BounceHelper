@@ -47,6 +47,7 @@ namespace Celeste.Mod.BounceHelper {
 		public Vector2 dashDir;
 		private bool wasRedDash = false;
 		public bool soulBound = true;
+		private bool ezelMode;
 
 		private float dashBufferTimer = 0f;
 		private const float dashBufferTime = 0.08f;
@@ -72,7 +73,7 @@ namespace Celeste.Mod.BounceHelper {
 
 		private static Color[] dashColors = new Color[] { Player.UsedHairColor, Player.NormalHairColor, Player.TwoDashesHairColor };
 		private static Color bounceColor = BounceHelperModule.bounceColor;
-		private static char[] spriteSuffixes = new char[] { 'B', 'R', 'P', 'F' };
+		private static char[] spriteSuffixes = new char[] { 'B', 'R', 'P', 'F', 'H' };
 		private float flashTimer = 0f;
 		private const float flashTime = 0.12f;
 
@@ -106,12 +107,13 @@ namespace Celeste.Mod.BounceHelper {
 			}
 		}
 
-		public BounceJellyfish(Vector2 position, bool platform, bool soulBound, int baseDashCount)
+		public BounceJellyfish(Vector2 position, bool platform, bool soulBound, int baseDashCount, bool ezelMode)
 			: base(position) {
 			this.soulBound = soulBound;
 			this.baseDashCount = baseDashCount;
 			dashes = baseDashCount;
 			this.platform = platform;
+			this.ezelMode = ezelMode;
 			startPos = Position;
 			base.Collider = new Hitbox(8f, 10f, -4f, -10f);
 			onCollideH = OnCollideH;
@@ -135,7 +137,8 @@ namespace Celeste.Mod.BounceHelper {
 		}
 
 		public BounceJellyfish(EntityData e, Vector2 offset)
-			: this(e.Position + offset, e.Bool("platform", true), e.Bool("soulBound", true), e.Int("baseDashCount", 1)) {
+			: this(e.Position + offset, e.Bool("platform", true), e.Bool("soulBound", true), e.Int("baseDashCount", 1), 
+				  e.Bool("ezelMode")) {
 		}
 
 		public override void Added(Scene scene) {
@@ -722,7 +725,8 @@ namespace Celeste.Mod.BounceHelper {
 		}
 
 		private void spritePlay(string name) {
-			char suffix = flashTimer > 0 ? 'F' : spriteSuffixes[dashes];
+			string suffix = flashTimer > 0 ? "F" : spriteSuffixes[dashes].ToString();
+			if (ezelMode && (suffix == "R" || suffix == "P")) suffix += 'H';
 			sprite.Play(name + suffix);
 		}
 
@@ -730,8 +734,7 @@ namespace Celeste.Mod.BounceHelper {
 			int frame = sprite.CurrentAnimationFrame;
 			var spriteData = new DynData<Sprite>(sprite);
 			float animationTimer = spriteData.Get<float>("animationTimer");
-			char newSuffix = flashTimer > 0 ? 'F' : spriteSuffixes[dashes];
-			sprite.Play(sprite.CurrentAnimationID.TrimEnd(spriteSuffixes) + newSuffix);
+			spritePlay(sprite.CurrentAnimationID.TrimEnd(spriteSuffixes));
 			sprite.SetAnimationFrame(frame);
 			spriteData["animationTimer"] = animationTimer;
 		}

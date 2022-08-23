@@ -51,6 +51,7 @@ namespace Celeste.Mod.BounceHelper {
 		[Pooled]
 		private class Debris : Actor {
 			private Image sprite;
+			private bool spriteInitialised = false;
 
 			private Vector2 home;
 
@@ -80,9 +81,6 @@ namespace Celeste.Mod.BounceHelper {
 				: base(Vector2.Zero) {
 				base.Tag = Tags.TransitionUpdate;
 				base.Collider = new Hitbox(4f, 4f, -2f, -2f);
-				Add(sprite = new Image(Calc.Random.Choose(GFX.Game.GetAtlasSubtextures("objects/moveblock/debris"))));
-				sprite.CenterOrigin();
-				sprite.FlipX = Calc.Random.Chance(0.5f);
 				onCollideH = delegate {
 					speed.X = (0f - speed.X) * 0.5f;
 				};
@@ -102,7 +100,13 @@ namespace Celeste.Mod.BounceHelper {
 			protected override void OnSquish(CollisionData data) {
 			}
 
-			public Debris Init(Vector2 position, Vector2 center, Vector2 returnTo) {
+			public Debris Init(string spritePath, Vector2 position, Vector2 center, Vector2 returnTo) {
+				if (!spriteInitialised) {
+					Add(sprite = new Image(Calc.Random.Choose(GFX.Game.GetAtlasSubtextures(spritePath + "/debris"))));
+					sprite.CenterOrigin();
+					sprite.FlipX = Calc.Random.Chance(0.5f);
+					spriteInitialised = true;
+				}
 				Collidable = true;
 				Position = position;
 				speed = (position - center).SafeNormalize(60f + Calc.Random.NextFloat(60f));
@@ -223,6 +227,7 @@ namespace Celeste.Mod.BounceHelper {
 
 		private bool oneUse;
 		private bool beganUnknown;
+		private string spritePath;
 		private Vector2 targetOffset = Vector2.Zero;
 		private const float bounceLerpRate = 4f;
 		private const float bounceLerpCutoff = 0.5f;
@@ -235,7 +240,7 @@ namespace Celeste.Mod.BounceHelper {
 
 		private Vector2 moveLiftSpeed = Vector2.Zero;
 
-		public BounceMoveBlock(Vector2 position, int width, int height, Directions direction, float speed, bool oneUse, string activationFlag)
+		public BounceMoveBlock(Vector2 position, int width, int height, Directions direction, float speed, bool oneUse, string activationFlag, string spritePath)
 			: base(position, width, height, safe: false) {
 			base.Depth = -1;
 			startPosition = position;
@@ -243,6 +248,7 @@ namespace Celeste.Mod.BounceHelper {
 			beganUnknown = direction == Directions.Unknown;
 			targetSpeed = speed;
 			this.oneUse = oneUse;
+			this.spritePath = spritePath;
 			this.activationFlag = activationFlag;
 			directionVector = Calc.AngleToVector(-(float)direction * (float)Math.PI / 4, 1);
 			if (Math.Abs(directionVector.X) < 0.5f) {
@@ -253,7 +259,7 @@ namespace Celeste.Mod.BounceHelper {
 			}
 			int num = width / 8;
 			int num2 = height / 8;
-			MTexture mTexture = GFX.Game["objects/moveBlock/base"];
+			MTexture mTexture = GFX.Game[spritePath + "/base"];
 			for (int k = 0; k < num; k++) {
 				for (int l = 0; l < num2; l++) {
 					int num5 = (k != 0) ? ((k < num - 1) ? 1 : 2) : 0;
@@ -261,7 +267,7 @@ namespace Celeste.Mod.BounceHelper {
 					AddImage(mTexture.GetSubtexture(num5 * 8, num6 * 8, 8, 8), new Vector2(k, l) * 8f, 0f, new Vector2(1f, 1f), body);
 				}
 			}
-			arrows = GFX.Game.GetAtlasSubtextures("objects/moveBlock/arrow");
+			arrows = GFX.Game.GetAtlasSubtextures(spritePath + "/arrow");
 			Add(moveSfx = new SoundSource());
 			Add(new Coroutine(Controller()));
 			UpdateColors();
@@ -270,7 +276,8 @@ namespace Celeste.Mod.BounceHelper {
 
 		public BounceMoveBlock(EntityData data, Vector2 offset)
 			: this(data.Position + offset, data.Width, data.Height, data.Enum("direction", Directions.Left),
-				  data.Float("speed", 60f), data.Bool("oneUse", false), data.Attr("activationFlag")) {
+				  data.Float("speed", 60f), data.Bool("oneUse", false), 
+				  data.Attr("activationFlag"), data.Attr("spritePath", "objects/BounceHelper/bounceMoveBlock")) {
 		}
 
 		public override void Awake(Scene scene) {
@@ -498,7 +505,7 @@ namespace Celeste.Mod.BounceHelper {
 				for (int x = 0; (float)x < Width; x += 8) {
 					for (int y = 0; (float)y < Height; y += 8) {
 						Vector2 offset = new Vector2((float)x + 4f, (float)y + 4f);
-						Debris d = Engine.Pooler.Create<Debris>().Init(Position + offset, Center, startPosition + offset);
+						Debris d = Engine.Pooler.Create<Debris>().Init(spritePath, Position + offset, Center, startPosition + offset);
 						debris.Add(d);
 						Scene.Add(d);
 					}
@@ -696,9 +703,9 @@ namespace Celeste.Mod.BounceHelper {
 			}
 			Draw.Rect(base.Center.X - 4f, base.Center.Y - 4f, 8f, 8f, fillColor);
 			if (state == MovementState.Breaking) {
-				GFX.Game["objects/moveBlock/x"].DrawCentered(base.Center);
+				GFX.Game[spritePath + "/x"].DrawCentered(base.Center);
 			} else if (direction == Directions.Unknown) {
-				GFX.Game["objects/BounceHelper/bounceMoveBlock/unknown"].DrawCentered(base.Center);
+				GFX.Game[spritePath + "/unknown"].DrawCentered(base.Center);
 			} else {
 				MTexture mTexture = arrows[(int)direction];
 				mTexture.DrawCentered(base.Center);
