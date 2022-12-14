@@ -6,7 +6,8 @@ using ..Ahorn, Maple
                                                         y::Integer,
                                                         twoDash::Bool=false,
                                                         oneUse::Bool=false,
-                                                        jellyfishOnly::Bool=false)
+                                                        jellyfishOnly::Bool=false,
+                                                        respawnTime::Number=2.5)
 
 const placements = Ahorn.PlacementDict(
     "Bounce Refill (BounceHelper)" => Ahorn.EntityPlacement(

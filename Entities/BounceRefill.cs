@@ -27,9 +27,10 @@ namespace Celeste.Mod.BounceHelper {
 		private ParticleType p_regen;
 		private ParticleType p_glow;
 
+		private float respawnTime;
 		private float respawnTimer;
 
-		public BounceRefill(Vector2 position, bool twoDashes, bool oneUse, bool jellyfishOnly)
+		public BounceRefill(Vector2 position, bool twoDashes, bool oneUse, bool jellyfishOnly, float respawnTime)
 			: base(position) {
 			base.Collider = new Hitbox(16f, 16f, -8f, -8f);
 			if (!jellyfishOnly) {
@@ -38,6 +39,7 @@ namespace Celeste.Mod.BounceHelper {
 			this.twoDashes = twoDashes;
 			this.oneUse = oneUse;
 			this.jellyfishOnly = jellyfishOnly;
+			this.respawnTime = respawnTime;
 			dashes = twoDashes ? 2 : 1;
 			string str;
 			if (jellyfishOnly) { 
@@ -48,13 +50,13 @@ namespace Celeste.Mod.BounceHelper {
 					p_glow = Refill.P_GlowTwo;
 				} else {
 					str = "objects/BounceHelper/bounceRefillJellyfishOnly/refill/";
-					p_shatter = Refill.P_Shatter;
+					p_shatter = new ParticleType(Refill.P_Shatter);
 					p_shatter.Color = Calc.HexToColor("ffd4d4");
 					p_shatter.Color2 = Calc.HexToColor("fc8686");
-					p_regen = Refill.P_Regen;
+					p_regen = new ParticleType(Refill.P_Regen);
 					p_regen.Color = Calc.HexToColor("FFA6CC");
 					p_regen.Color2 = Calc.HexToColor("e06e6e");
-					p_glow = Refill.P_Glow;
+					p_glow = new ParticleType(Refill.P_Glow);
 					p_glow.Color = p_regen.Color;
 					p_glow.Color2 = p_regen.Color2;
 				}
@@ -99,7 +101,7 @@ namespace Celeste.Mod.BounceHelper {
 		}
 
 		public BounceRefill(EntityData data, Vector2 offset)
-			: this(data.Position + offset, data.Bool("twoDash"), data.Bool("oneUse"), data.Bool("jellyfishOnly")) {
+			: this(data.Position + offset, data.Bool("twoDash"), data.Bool("oneUse"), data.Bool("jellyfishOnly"), data.Float("respawnTime", 2.5f)) {
 		}
 
 		public override void Added(Scene scene) {
@@ -163,7 +165,7 @@ namespace Celeste.Mod.BounceHelper {
 			Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
 			Collidable = false;
 			Add(new Coroutine(RefillRoutine(breakAngle)));
-			respawnTimer = 2.5f;
+			respawnTimer = respawnTime;
 		}
 
 		private IEnumerator RefillRoutine(float breakAngle) {

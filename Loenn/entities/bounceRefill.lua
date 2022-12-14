@@ -8,7 +8,8 @@ BounceHelperBounceRefill.placements = {
         data = {
             oneUse = false,
             twoDash = false,
-            jellyfishOnly = false
+            jellyfishOnly = false,
+            respawnTime = 2.5
         }
     },
     {
@@ -16,7 +17,8 @@ BounceHelperBounceRefill.placements = {
         data = {
             oneUse = false,
             twoDash = true,
-            jellyfishOnly = false
+            jellyfishOnly = false,
+            respawnTime = 2.5
         }
     }
 }
