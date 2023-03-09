@@ -896,7 +896,7 @@ namespace Celeste.Mod.BounceHelper {
         #region Allows jellyfish to start dash during player dash game freeze
         private void modEngineUpdate(On.Monocle.Engine.orig_Update orig, Engine engine, GameTime gameTime) {
             orig(engine, gameTime);
-            if (isEnabled && Settings.JellyfishDash.Pressed) {
+            if (Settings.JellyfishDash.Pressed) {
                 foreach (BounceJellyfish jellyfish in Engine.Scene.Tracker.GetEntities<BounceJellyfish>()) {
                     jellyfish.bufferDash();
                 }
@@ -985,7 +985,7 @@ namespace Celeste.Mod.BounceHelper {
             orig(player);
             if (isEnabled) {
                 var playerData = getPlayerData(player);
-                playerData.Set("varJumpTimer",  0);
+                playerData.Set("varJumpTimer",  0f);
             }
         }
 
