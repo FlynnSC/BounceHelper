@@ -366,7 +366,7 @@ namespace Celeste.Mod.BounceHelper {
                 if (holeBounced) {
 
                     // Fixes hole bouncing weirdness
-                    playerData.Set("forceMoveXTimer", 0);
+                    playerData.Set("forceMoveXTimer", 0f);
                     holeBounced = false;
                 } else {
 
@@ -427,7 +427,7 @@ namespace Celeste.Mod.BounceHelper {
 
             // Helps maintain momentum when chaining a sideways bounce into a downwards bounce
             if (!tempCornerBounced && travellingFastHorizontally) {
-                playerData.Set("forceMoveX", player.Facing);
+                playerData.Set("forceMoveX", (int)player.Facing);
                 playerData.Set("forceMoveXTimer", WallJumpForceTime);
             }
         }
