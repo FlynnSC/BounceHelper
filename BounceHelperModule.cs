@@ -601,7 +601,7 @@ namespace Celeste.Mod.BounceHelper {
             return jellyfishBounceTimer > 0f && player.Holding != null;
         }
 
-        // Decreases the jellyfishBounceTimer and jellyfishWallJumpTimer, and stops the playing climbing if entering 
+        // Decreases the jellyfishBounceTimer and jellyfishWallJumpTimer, and stops the playing climbing if entering
         // bounce mode while climbing
         private void modUpdate(On.Celeste.Player.orig_Update orig, Player player) {
             orig(player);
@@ -896,7 +896,7 @@ namespace Celeste.Mod.BounceHelper {
         #region Allows jellyfish to start dash during player dash game freeze
         private void modEngineUpdate(On.Monocle.Engine.orig_Update orig, Engine engine, GameTime gameTime) {
             orig(engine, gameTime);
-            if (Settings.JellyfishDash.Pressed) {
+            if (Engine.Scene is Level && Settings.JellyfishDash.Pressed) {
                 foreach (BounceJellyfish jellyfish in Engine.Scene.Tracker.GetEntities<BounceJellyfish>()) {
                     jellyfish.bufferDash();
                 }
