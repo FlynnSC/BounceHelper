@@ -259,7 +259,7 @@ namespace Celeste.Mod.BounceHelper {
                 // Zip mover activation
                 if (solid is BounceZipMover) {
                     BounceZipMover mover = solid as BounceZipMover;
-                    if (!mover.moon || (player.Holding != null && player.Holding.SlowFall)) {
+                    if (!mover.moon || player.Holding?.Entity is BounceJellyfish) {
                         mover.activate();
                     }
                 }
@@ -281,7 +281,7 @@ namespace Celeste.Mod.BounceHelper {
                 if (solid is BounceSwapBlock) {
                     BounceSwapBlock swapBlock = solid as BounceSwapBlock;
                     if (swapBlock.moon) {
-                        if (player.Holding != null && swapBlock.onBounce(player.Speed.Angle())) {
+                        if (player.Holding?.Entity is BounceJellyfish && swapBlock.onBounce(player.Speed.Angle())) {
                             (player.Holding.Entity as BounceJellyfish).refillDash();
                         }
                     } else {
@@ -353,7 +353,7 @@ namespace Celeste.Mod.BounceHelper {
                     foreach (Solid solid in player.CollideAll<Solid>(player.Position + Vector2.UnitX * -dir * WallJumpCheckDist)) {
                         if (solid is BounceZipMover) {
                             BounceZipMover mover = solid as BounceZipMover;
-                            if (!mover.moon || (player.Holding != null && player.Holding.SlowFall)) {
+                            if (!mover.moon || player.Holding?.Entity is BounceJellyfish) {
                                 mover.activate();
                             }
                         }
@@ -479,13 +479,13 @@ namespace Celeste.Mod.BounceHelper {
             }
         }
 
-        // Fixes soundsource bug + refills jellyfish dash weh ndremdashing while held
+        // Fixes soundsource bug + refills jellyfish dash when dreamdashing while held
         private void modDreamDashEnd(On.Celeste.Player.orig_DreamDashEnd orig, Player player) {
             if (dreamBounced) {
                 dreamBounced = false;
             } else {
                 orig(player);
-                if (isEnabled && player.Holding != null) {
+                if (isEnabled && player.Holding?.Entity is BounceJellyfish) {
                     (player.Holding.Entity as BounceJellyfish).refillDash();
                 }
             }
@@ -598,7 +598,7 @@ namespace Celeste.Mod.BounceHelper {
         }
 
         private bool canJellyfishBounce(Player player) {
-            return jellyfishBounceTimer > 0f && player.Holding != null;
+            return jellyfishBounceTimer > 0f && player.Holding?.Entity is BounceJellyfish;
         }
 
         // Decreases the jellyfishBounceTimer and jellyfishWallJumpTimer, and stops the playing climbing if entering
@@ -659,8 +659,16 @@ namespace Celeste.Mod.BounceHelper {
                     player.Speed.Y += hiccupBoost.Y;
                     player.Dashes = Math.Max(0, player.Dashes - 1);
                 }
-
                 Input.Dash.ConsumeBuffer();
+
+                if (Engine.Scene is Level) {
+                    foreach (BounceJellyfish jellyfish in Engine.Scene.Tracker.GetEntities<BounceJellyfish>()) {
+                        if (jellyfish.matchPlayerDash) {
+                            jellyfish.bufferDash();
+                        }
+                    }
+                }
+
                 return currState;
             } else {
                 return orig(player);
@@ -764,7 +772,7 @@ namespace Celeste.Mod.BounceHelper {
 
         #region Refills jellyfish dash when the player is holding it and touches the ground
         private bool modRefillDash(On.Celeste.Player.orig_RefillDash orig, Player player) {
-            if (isEnabled && player.Holding != null && player.Holding.Entity is BounceJellyfish && player.OnGround()) {
+            if (isEnabled && player.Holding?.Entity is BounceJellyfish && player.OnGround()) {
                 (player.Holding.Entity as BounceJellyfish).refillDash();
             }
             return orig(player);
@@ -774,7 +782,7 @@ namespace Celeste.Mod.BounceHelper {
         #region Refills jellyfish dash when the player is holding it and collides with a spring
         private void modSpringOnCollide(On.Celeste.Spring.orig_OnCollide orig, Spring spring, Player player) {
             orig(spring, player);
-            if (isEnabled && player.Holding != null && player.Holding.Entity is BounceJellyfish) {
+            if (isEnabled && player.Holding?.Entity is BounceJellyfish) {
                 (player.Holding.Entity as BounceJellyfish).refillDash();
             }
         }
@@ -898,7 +906,9 @@ namespace Celeste.Mod.BounceHelper {
             orig(engine, gameTime);
             if (Engine.Scene is Level && Settings.JellyfishDash.Pressed) {
                 foreach (BounceJellyfish jellyfish in Engine.Scene.Tracker.GetEntities<BounceJellyfish>()) {
-                    jellyfish.bufferDash();
+                    if (!jellyfish.matchPlayerDash) {
+                        jellyfish.bufferDash();
+                    }
                 }
             }
         }

@@ -7,7 +7,8 @@ using ..Ahorn, Maple
                                                               platform::Bool=true,
                                                               soulBound::Bool=true,
                                                               baseDashCount::Integer=1,
-                                                              ezelMode::Bool=false) 
+                                                              ezelMode::Bool=false,
+                                                              matchPlayerDash::Bool=false) 
 
 const placements = Ahorn.PlacementDict(
     "Bounce Jellyfish (Bounce Helper)" => Ahorn.EntityPlacement(

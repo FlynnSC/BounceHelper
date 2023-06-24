@@ -48,6 +48,7 @@ namespace Celeste.Mod.BounceHelper {
 		private bool wasRedDash = false;
 		public bool soulBound = true;
 		private bool ezelMode;
+		public bool matchPlayerDash;
 
 		private float dashBufferTimer = 0f;
 		private const float dashBufferTime = 0.08f;
@@ -107,13 +108,14 @@ namespace Celeste.Mod.BounceHelper {
 			}
 		}
 
-		public BounceJellyfish(Vector2 position, bool platform, bool soulBound, int baseDashCount, bool ezelMode)
+		public BounceJellyfish(Vector2 position, bool platform, bool soulBound, int baseDashCount, bool ezelMode, bool matchPlayerDash)
 			: base(position) {
 			this.soulBound = soulBound;
 			this.baseDashCount = baseDashCount;
 			dashes = baseDashCount;
 			this.platform = platform;
 			this.ezelMode = ezelMode;
+			this.matchPlayerDash = matchPlayerDash;
 			startPos = Position;
 			base.Collider = new Hitbox(8f, 10f, -4f, -10f);
 			onCollideH = OnCollideH;
@@ -138,7 +140,7 @@ namespace Celeste.Mod.BounceHelper {
 
 		public BounceJellyfish(EntityData e, Vector2 offset)
 			: this(e.Position + offset, e.Bool("platform", true), e.Bool("soulBound", true), e.Int("baseDashCount", 1), 
-				  e.Bool("ezelMode")) {
+				  e.Bool("ezelMode"), e.Bool("matchPlayerDash")) {
 		}
 
 		public override void Added(Scene scene) {

@@ -23,7 +23,8 @@ BounceHelperBounceJellyfish.placements = {
             platform = true,
             soulBound = false,
             baseDashCount = 0,
-            ezelMode = false
+            ezelMode = false,
+            matchPlayerDash = false
         }
     },
     {
@@ -32,7 +33,8 @@ BounceHelperBounceJellyfish.placements = {
             platform = true,
             soulBound = false,
             baseDashCount = 1,
-            ezelMode = false
+            ezelMode = false,
+            matchPlayerDash = false
         }
     },
     {
@@ -41,7 +43,8 @@ BounceHelperBounceJellyfish.placements = {
             platform = true,
             soulBound = false,
             baseDashCount = 2,
-            ezelMode = false
+            ezelMode = false,
+            matchPlayerDash = false
         }
     }
 }
