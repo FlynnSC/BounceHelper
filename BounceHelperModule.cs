@@ -18,7 +18,8 @@ namespace Celeste.Mod.BounceHelper {
 
         public static Session session = null;
 
-        private static bool isEnabled { get => (session != null && session.GetFlag("bounceModeEnabled")) || Settings.ForceBounceMode; }
+        private static bool isEnabled => (session != null && session.GetFlag("bounceModeEnabled")) || Settings.ForceBounceMode;
+        private static bool useVanillaThrowBehaviour => (session != null && session.GetFlag("bounceModeUseVanillaThrowBehaviour"));
 
         #region Vanilla constants
         private const float DashSpeed = 240f;
@@ -718,7 +719,7 @@ namespace Celeste.Mod.BounceHelper {
         // Allows full directional throwing
         // Throwing downwards or diagonally downwards will give the player an upwards boost of speed
         private void modThrow(On.Celeste.Player.orig_Throw orig, Player player) {
-            if (isEnabled && player.Holding != null) {
+            if (isEnabled && !useVanillaThrowBehaviour && player.Holding != null) {
                 var playerData = getPlayerData(player);
                 Vector2 throwDir = playerData.Get<Vector2>("lastAim");
                 if (Input.MoveX.Value == 0 && Input.MoveY.Value == 0 || player.OnGround() && throwDir.Y > 0) {

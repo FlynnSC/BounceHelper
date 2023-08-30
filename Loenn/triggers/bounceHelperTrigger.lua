@@ -4,13 +4,15 @@ bounceHelperBounceTriggerPlacement.placements = {
 {
         name = "normal",
         data = {
-            enable = true
+            enable = true,
+            useVanillaThrowBehaviour = false
         }
     },
     {
         name = "disable",
         data = {
-            enable = false
+            enable = false,
+            useVanillaThrowBehaviour = false
         }
     }
 }
