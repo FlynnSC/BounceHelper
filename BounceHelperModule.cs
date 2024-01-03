@@ -470,6 +470,10 @@ namespace Celeste.Mod.BounceHelper {
                     player.Ducking = true;
                     playerSuperJump.Invoke(player, new object[] { });
                     player.StateMachine.State = Player.StNormal;
+                    var playerData = getPlayerData(player);
+                    if (playerData.Get<float>("dashRefillCooldownTimer") <= 0 && !player.Inventory.NoRefills) {
+                        player.RefillDash();
+                    }
                 } else {
 
                     // Prevents diagonal ceiling bouncing
@@ -907,7 +911,7 @@ namespace Celeste.Mod.BounceHelper {
             orig(engine, gameTime);
             if (Engine.Scene is Level && Settings.JellyfishDash.Pressed) {
                 foreach (BounceJellyfish jellyfish in Engine.Scene.Tracker.GetEntities<BounceJellyfish>()) {
-                    if (!jellyfish.matchPlayerDash) {
+                    if (jellyfish.Active && !jellyfish.matchPlayerDash) {
                         jellyfish.bufferDash();
                     }
                 }
