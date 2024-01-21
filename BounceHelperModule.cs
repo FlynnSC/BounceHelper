@@ -258,16 +258,15 @@ namespace Celeste.Mod.BounceHelper {
                 }
 
                 // Zip mover activation
-                if (solid is BounceZipMover) {
-                    BounceZipMover mover = solid as BounceZipMover;
-                    if (!mover.moon || player.Holding?.Entity is BounceJellyfish) {
-                        mover.activate();
+                if (solid is BounceZipMover zipMopver) {
+                    if (!zipMopver.moon || player.Holding?.Entity is BounceJellyfish) {
+                        zipMopver.activate();
                     }
                 }
 
                 // Move block bouncing
-                if (solid is BounceMoveBlock) {
-                    float speedMult = (solid as BounceMoveBlock).bounceImpact(surfaceDir, bounceStrength);
+                if (solid is BounceMoveBlock moveBlock) {
+                    float speedMult = moveBlock.bounceImpact(surfaceDir, bounceStrength);
                     if (!moveBounced) {
                         if (surfaceDir.X == 0) {
                             player.Speed.Y *= speedMult;
@@ -279,8 +278,7 @@ namespace Celeste.Mod.BounceHelper {
                 }
 
                 // Swap block bouncing
-                if (solid is BounceSwapBlock) {
-                    BounceSwapBlock swapBlock = solid as BounceSwapBlock;
+                if (solid is BounceSwapBlock swapBlock) {
                     if (swapBlock.moon) {
                         if (player.Holding?.Entity is BounceJellyfish && swapBlock.onBounce(player.Speed.Angle())) {
                             (player.Holding.Entity as BounceJellyfish).refillDash();
@@ -290,6 +288,12 @@ namespace Celeste.Mod.BounceHelper {
                             player.RefillDash();
                         }
                     }
+                }
+
+                // Falling block activation
+                if (solid is BounceFallingBlock fallingBlock)
+                {
+                    fallingBlock.Trigger();
                 }
             }
 

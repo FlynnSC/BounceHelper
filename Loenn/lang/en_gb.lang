@@ -17,6 +17,12 @@ entities.BounceHelper/BounceDreamBlock.attributes.description.internalAccelX=How
 entities.BounceHelper/BounceDreamBlock.attributes.description.internalAccelY=How strongly the dream block pushes the player vertically.
 entities.BounceHelper/BounceDreamBlock.attributes.description.oscillationDuration=The time it takes for the dream block travel. Needs a node.
 
+# -- Falling Block --
+entities.BounceHelper/BounceFallingBlock.placements.name.normal=Bounce Falling Block
+entities.BounceHelper/BounceFallingBlock.attributes.description.climbFall=After a delay, the block will physically fall down until it comes into contact with another block.
+entities.BounceHelper/BounceFallingBlock.attributes.description.tiletype=Changes the visual appearance of the falling block.
+entities.BounceHelper/BounceFallingBlock.attributes.description.behind=Whether the block should visually be further behind in the scene or not.
+
 # -- Bounce Jellyfish --
 entities.BounceHelper/BounceJellyfish.placements.name.normal=Bounce Jellyfish
 entities.BounceHelper/BounceJellyfish.placements.name.single=Bounce Jellyfish (One Dash)

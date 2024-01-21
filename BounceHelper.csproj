@@ -63,6 +63,7 @@
     <Compile Include="BounceHelperSettings.cs" />
     <Compile Include="Entities\BounceBumper.cs" />
     <Compile Include="Entities\BounceDreamBlock.cs" />
+    <Compile Include="Entities\BounceFallingBlock.cs" />
     <Compile Include="Entities\BounceHelperTrigger.cs" />
     <Compile Include="Entities\BounceJellyfish.cs" />
     <Compile Include="Entities\BounceMoveBlock.cs" />
