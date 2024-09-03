@@ -20,6 +20,7 @@ namespace Celeste.Mod.BounceHelper {
 
         private static bool isEnabled => (session != null && session.GetFlag("bounceModeEnabled")) || Settings.ForceBounceMode;
         private static bool useVanillaThrowBehaviour => (session != null && session.GetFlag("bounceModeUseVanillaThrowBehaviour"));
+        private static bool useVanillaPickupBehaviour => (session != null && session.GetFlag("bounceModeUseVanillaPickupBehaviour"));
 
         #region Vanilla constants
         private const float DashSpeed = 240f;
@@ -802,7 +803,7 @@ namespace Celeste.Mod.BounceHelper {
         // Eliminates the grab animation wait time
         // Allows jellyfish dashes and bounces to transfer momentum unto the player in the same way that player dashes and bounces can
         private IEnumerator modPickupCoroutine(On.Celeste.Player.orig_PickupCoroutine orig, Player player) {
-            if (isEnabled) {
+            if (isEnabled && !useVanillaPickupBehaviour) {
                 var playerData = getPlayerData(player);
                 Audio.Play("event:/char/madeline/crystaltheo_lift", player.Position);
                 Input.Rumble(RumbleStrength.Medium, RumbleLength.Short);

@@ -6,12 +6,14 @@ namespace Celeste.Mod.BounceHelper {
     class BounceHelperTrigger : Trigger {
         private bool enable;
         private bool useVanillaThrowBehaviour;
+        private bool useVanillaPickupBehaviour;
         private bool disableOnLeave;
 
         public BounceHelperTrigger(EntityData data, Vector2 offset)
             : base(data, offset) {
             enable = data.Bool("enable", true);
             useVanillaThrowBehaviour = data.Bool("useVanillaThrowBehaviour", false);
+            useVanillaPickupBehaviour = data.Bool("useVanillaPickupBehaviour", false);
             disableOnLeave = data.Bool("disableOnLeave", false);
         }
 
@@ -19,6 +21,7 @@ namespace Celeste.Mod.BounceHelper {
             base.OnEnter(player);
             SceneAs<Level>().Session.SetFlag("bounceModeEnabled", enable);
             SceneAs<Level>().Session.SetFlag("bounceModeUseVanillaThrowBehaviour", useVanillaThrowBehaviour);
+            SceneAs<Level>().Session.SetFlag("bounceModeUseVanillaPickupBehaviour", useVanillaPickupBehaviour);
         }
 
         public override void OnLeave(Player player) {
