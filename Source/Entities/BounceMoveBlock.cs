@@ -97,7 +97,7 @@ namespace Celeste.Mod.BounceHelper {
 				};
 			}
 
-			protected override void OnSquish(CollisionData data) {
+			public override void OnSquish(CollisionData data) {
 			}
 
 			public Debris Init(string spritePath, Vector2 position, Vector2 center, Vector2 returnTo) {

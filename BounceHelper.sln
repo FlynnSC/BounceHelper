@@ -1,9 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30002.166
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BounceHelper", "BounceHelper.csproj", "{020326C3-1223-4DF2-8491-481637F89161}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BounceHelper", "Source\BounceHelper.csproj", "{472281A7-9373-412A-8E8E-5B603857A9D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{020326C3-1223-4DF2-8491-481637F89161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{020326C3-1223-4DF2-8491-481637F89161}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{020326C3-1223-4DF2-8491-481637F89161}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{020326C3-1223-4DF2-8491-481637F89161}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {935FC543-FFD9-407D-A0CB-A59A86F318CA}
+		{472281A7-9373-412A-8E8E-5B603857A9D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{472281A7-9373-412A-8E8E-5B603857A9D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{472281A7-9373-412A-8E8E-5B603857A9D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{472281A7-9373-412A-8E8E-5B603857A9D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

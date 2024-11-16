@@ -1,6 +1,0 @@
-C:\Program Files (x86)\Steam\steamapps\common\Celeste\Mods\BounceHelper\obj\Debug\BounceHelper.csproj.CoreCompileInputs.cache
-C:\Program Files (x86)\Steam\steamapps\common\Celeste\Mods\BounceHelper\bin\Debug\BounceHelper.dll
-C:\Program Files (x86)\Steam\steamapps\common\Celeste\Mods\BounceHelper\bin\Debug\BounceHelper.pdb
-C:\Program Files (x86)\Steam\steamapps\common\Celeste\Mods\BounceHelper\obj\Debug\BounceHelper.dll
-C:\Program Files (x86)\Steam\steamapps\common\Celeste\Mods\BounceHelper\obj\Debug\BounceHelper.pdb
-C:\Program Files (x86)\Steam\steamapps\common\Celeste\Mods\BounceHelper\obj\Debug\BounceHelper.csproj.AssemblyReference.cache

@@ -1,7 +1,7 @@
-﻿using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input;
 
 namespace Celeste.Mod.BounceHelper {
-    public class BounceHelperSettings : EverestModuleSettings {
+    public class BounceHelperModuleSettings : EverestModuleSettings {
         [DefaultButtonBinding(Buttons.LeftShoulder, Keys.Space)]
         public ButtonBinding JellyfishDash { get; set; } = new ButtonBinding(Buttons.LeftShoulder, Keys.Space);
 

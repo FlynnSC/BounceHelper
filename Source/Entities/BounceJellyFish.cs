@@ -628,7 +628,7 @@ namespace Celeste.Mod.BounceHelper {
 			}
 		}
 
-		protected override void OnSquish(CollisionData data) {
+		public override void OnSquish(CollisionData data) {
 			if (!TrySquishWiggle(data)) {
 				die();
 			}
