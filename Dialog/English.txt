@@ -1,0 +1,14 @@
+BounceHelper_ReplaceVanillaEntities_Hint=
+    Replaces vanilla entities with BounceHelper equivalents.
+
+BounceHelper_ReplaceBumpers_Hint=
+    BounceHelper bumpers do not support nodes.
+
+BounceHelper_ReplaceJellyfish_Hint=
+    BounceHelper jellyfish will always have 1 dash.
+
+BounceHelper_SoulboundJellyfish_Hint=
+    Whether the player should die if a BounceHelper jellyfish dies.
+
+BounceHelper_ReplaceMoveBlocks_Hint=
+    BounceHelper move blocks do not support steering.

@@ -106,6 +106,10 @@ namespace Celeste.Mod.BounceHelper
             On.Celeste.Level.Begin += onLevelBegin;
             Everest.Events.CustomBirdTutorial.OnParseCommand += CustomBirdTutorial_OnParseCommand;
             #endregion
+
+            #region Replace vanilla entities with BounceHelper equivalents
+            Everest.Events.Level.OnLoadEntity += ReplaceVanillaEntities;
+            #endregion
         }
 
         public override void Unload()
@@ -152,6 +156,10 @@ namespace Celeste.Mod.BounceHelper
             On.Celeste.Player.DashBegin -= modDashBegin;
             On.Celeste.Level.Begin -= onLevelBegin;
             Everest.Events.CustomBirdTutorial.OnParseCommand -= CustomBirdTutorial_OnParseCommand;
+            #endregion
+
+            #region Replace vanilla entities with BounceHelper equivalents
+            Everest.Events.Level.OnLoadEntity -= ReplaceVanillaEntities;
             #endregion
         }
 
@@ -1256,5 +1264,145 @@ namespace Celeste.Mod.BounceHelper
             Logger.Log("Bounce Helper", str);
         }
         #endregion
+
+        #region Replace vanilla entities with BounceHelper equivalents
+
+        // look for vanilla entities and replace them, converting properties if necessary
+        private static bool ReplaceVanillaEntities(Level level, LevelData levelData, Vector2 offset, EntityData origEntityData)
+        {
+            BounceHelperEverywhereSettings settings = Settings.ReplaceVanillaEntities;
+
+            // only clone the EntityData if necessary
+            EntityData entityData;
+
+            if (settings.ReplaceBumpers && origEntityData.Name == "bigSpinner")
+            {
+                entityData = CloneEntityData(origEntityData);
+
+                Logger.Debug(nameof(BounceHelperModule),
+                    $"Replacing {nameof(Bumper)} at {entityData.Position + offset} with BounceHelper equivalent.");
+
+                // TODO: BounceBumpers don't support nodes
+                entityData.Name = "BounceHelper/BounceBumper";
+                level.Add(new BounceBumper(entityData, offset));
+                return true;
+            }
+            if (settings.ReplaceDreamBlocks && origEntityData.Name == "dreamBlock")
+            {
+                entityData = CloneEntityData(origEntityData);
+
+                Logger.Debug(nameof(BounceHelperModule),
+                    $"Replacing {nameof(DreamBlock)} at {entityData.Position + offset} with BounceHelper equivalent.");
+
+                entityData.Name = "BounceHelper/BounceDreamBlock";
+                if (entityData.FirstNodeNullable() is { } swingNode)
+                {
+                    // vanilla calculates half of the period, meanwhile oscillationDuration wants the full period
+                    // hence the division by 6f instead of 12f
+                    float oscillationDuration = Vector2.Distance(entityData.Position, swingNode) / 6f;
+                    if (entityData.Bool("fastMoving"))
+                        oscillationDuration /= 3f;
+
+                    entityData.Values["oscillationDuration"] = oscillationDuration;
+                }
+
+                level.Add(new BounceDreamBlock(entityData, offset));
+                return true;
+            }
+            if (settings.ReplaceFallingBlocks && origEntityData.Name == "fallingBlock")
+            {
+                entityData = CloneEntityData(origEntityData);
+
+                Logger.Debug(nameof(BounceHelperModule),
+                    $"Replacing {nameof(FallingBlock)} at {entityData.Position + offset} with BounceHelper equivalent.");
+
+                entityData.Name = "BounceHelper/BounceFallingBlock";
+                level.Add(new BounceFallingBlock(entityData, offset));
+                return true;
+            }
+            if (settings.ReplaceJellyfish && origEntityData.Name == "glider")
+            {
+                entityData = CloneEntityData(origEntityData);
+
+                Logger.Debug(nameof(BounceHelperModule),
+                    $"Replacing {nameof(Glider)} at {entityData.Position + offset} with BounceHelper equivalent.");
+
+                entityData.Name = "BounceHelper/BounceJellyfish";
+                entityData.Values["platform"] = entityData.Values["bubble"];
+                entityData.Values["soulBound"] = settings.SoulboundJellyfish;
+                level.Add(new BounceJellyfish(entityData, offset));
+                return true;
+            }
+            if (settings.ReplaceMoveBlocks && origEntityData.Name == "moveBlock")
+            {
+                entityData = CloneEntityData(origEntityData);
+
+                Logger.Debug(nameof(BounceHelperModule),
+                    $"Replacing {nameof(MoveBlock)} at {entityData.Position + offset} with BounceHelper equivalent.");
+
+                // TODO: BounceMoveBlocks don't support steering
+                // TODO: BounceMoveBlocks reform after 1s, instead of vanilla's 2.2s
+                entityData.Name = "BounceHelper/BounceMoveBlock";
+                entityData.Values["speed"] = entityData.Bool("fast") ? 75 : 60;
+                level.Add(new BounceMoveBlock(entityData, offset));
+                return true;
+            }
+            if (settings.ReplaceRefills && origEntityData.Name == "refill")
+            {
+                entityData = CloneEntityData(origEntityData);
+
+                Logger.Debug(nameof(BounceHelperModule),
+                    $"Replacing {nameof(Refill)} at {entityData.Position + offset} with BounceHelper equivalent.");
+
+                entityData.Name = "BounceHelper/BounceRefill";
+                level.Add(new BounceRefill(entityData, offset));
+                return true;
+            }
+            if (settings.ReplaceSwapBlocks && origEntityData.Name == "swapBlock")
+            {
+                entityData = CloneEntityData(origEntityData);
+
+                Logger.Debug(nameof(BounceHelperModule),
+                    $"Replacing {nameof(SwapBlock)} at {entityData.Position + offset} with BounceHelper equivalent.");
+
+                entityData.Name = "BounceHelper/BounceSwapBlock";
+                entityData.Values["moon"] = entityData.Enum<SwapBlock.Themes>("theme") == SwapBlock.Themes.Moon;
+                level.Add(new BounceSwapBlock(entityData, offset));
+                return true;
+            }
+            if (settings.ReplaceZipMovers && origEntityData.Name == "zipMover")
+            {
+                entityData = CloneEntityData(origEntityData);
+
+                Logger.Debug(nameof(BounceHelperModule),
+                    $"Replacing {nameof(ZipMover)} at {entityData.Position + offset} with BounceHelper equivalent.");
+
+                entityData.Name = "BounceHelper/BounceZipMover";
+                entityData.Values["moon"] = entityData.Enum<ZipMover.Themes>("theme") == ZipMover.Themes.Moon;
+                level.Add(new BounceZipMover(entityData, offset));
+                return true;
+            }
+
+            return false;
+        }
+
+        // create an empty Values dict and reuse it instead of making a new one every time
+        private static readonly Dictionary<string, object> EmptyValues = [];
+
+        // mutating EntityDatas is bad, because changes persist until the map is reloaded
+        // so we clone it instead
+        private static EntityData CloneEntityData(EntityData entityData) => new() {
+            ID = entityData.ID,
+            Height = entityData.Height,
+            Level = entityData.Level,
+            Name = entityData.Name,
+            Nodes = [..entityData.Nodes], // this syntax requires the .net 8 sdk to build
+            Origin = entityData.Origin,
+            Position = entityData.Position,
+            Values = new Dictionary<string, object>(entityData.Values ?? EmptyValues), // apparently Values can be null
+            Width = entityData.Width,
+        };
+
+        #endregion
     }
-}
+}
