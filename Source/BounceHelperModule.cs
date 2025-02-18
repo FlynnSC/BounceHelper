@@ -56,8 +56,8 @@ namespace Celeste.Mod.BounceHelper
             // debug builds use verbose logging
             Logger.SetLogLevel(nameof(BounceHelperModule), LogLevel.Verbose);
 #else
-        // release builds use info logging to reduce spam in log files
-        Logger.SetLogLevel(nameof(BounceHelperModule), LogLevel.Info);
+            // release builds use info logging to reduce spam in log files
+            Logger.SetLogLevel(nameof(BounceHelperModule), LogLevel.Info);
 #endif
         }
 
@@ -1405,4 +1405,4 @@ namespace Celeste.Mod.BounceHelper
 
         #endregion
     }
-}
+}
