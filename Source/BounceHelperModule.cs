@@ -1405,4 +1405,4 @@ namespace Celeste.Mod.BounceHelper
 
         #endregion
     }
-}
+}
