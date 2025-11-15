@@ -64,7 +64,12 @@ entities.BounceHelper/BounceZipMover.placements.description.normal=Zip Mover tha
 entities.BounceHelper/BounceZipMover.placements.description.moon=Bounce Zip Mover that only responds to the Bounce Jellyfish.
 entities.BounceHelper/BounceZipMover.attributes.description.moon=Whether the moon variant is used. Requires Bounce Jellyfish to function.
 
-
+# -- Dash Block --
+entities.BounceHelper/BounceDashBlock.placements.name.normal=Bounce Dash Block
+entities.BounceHelper/BounceDashBlock.attributes.description.permanent=Once broken, the block will remain that way, even if the player dies.
+entities.BounceHelper/BounceDashBlock.attributes.description.blending=Blends the block with the walls it touches, making it less apparent.
+entities.BounceHelper/BounceDashBlock.attributes.description.canGraze=Whether the dash block should break when bounced on, even if the dash wasn't towards the block but along its edge.
+entities.BounceHelper/BounceDashBlock.attributes.description.tiletype=Changes the visual appearance of the falling block.
 
 # -- Triggers --
 
