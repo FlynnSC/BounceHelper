@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Celeste.Mod.BounceHelper.Entities;
+using Microsoft.Xna.Framework;
 using Mono.Cecil.Cil;
 using Monocle;
 using MonoMod.Cil;
@@ -338,6 +339,12 @@ namespace Celeste.Mod.BounceHelper
                 if (solid is BounceFallingBlock fallingBlock)
                 {
                     fallingBlock.Trigger();
+                }
+
+                // Dash block breaking
+                if(solid is BounceDashBlock dashBlock)
+                {
+                    if(dashBlock.canGraze || Math.Abs(dashBlock.lastDashDir.Angle() - surfaceDir.Angle()) < Math.PI / 2) dashBlock.Break(player.Center,player.DashDir,true,true);
                 }
             }
 
