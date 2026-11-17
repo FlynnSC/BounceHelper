@@ -8,16 +8,16 @@ local BounceHelperBounceZipMover = {}
 
 local themeTextures = {
     normal = {
-        nodeCog = "objects/zipmover/cog",
-        lights = "objects/zipmover/light01",
-        block = "objects/zipmover/block",
-        innerCogs = "objects/zipmover/innercog"
+        nodeCog = "/cog",
+        lights = "/light01",
+        block = "/block",
+        innerCogs = "/innercog"
     },
     moon = {
-        nodeCog = "objects/zipmover/moon/cog",
-        lights = "objects/zipmover/moon/light01",
-        block = "objects/zipmover/moon/block",
-        innerCogs = "objects/zipmover/moon/innercog"
+        nodeCog = "/moon/cog",
+        lights = "/moon/light01",
+        block = "/moon/block",
+        innerCogs = "/moon/innercog"
     }
 }
 
@@ -26,19 +26,15 @@ local blockNinePatchOptions = {
     borderMode = "repeat"
 }
 
-local centerColor = {0, 0, 0}
-local ropeColor = {102 / 255, 57 / 255, 49 / 255}
-
-local themes = {
-    "Normal", "Moon"
-}
+local defaultFillColor = "000000"
+local defaultRopeColor = "663931"
+local defaultRopeLightColor = "9b6157"
 
 BounceHelperBounceZipMover.name = "BounceHelper/BounceZipMover"
 BounceHelperBounceZipMover.depth = -9999
 BounceHelperBounceZipMover.nodeVisibility = "never"
 BounceHelperBounceZipMover.nodeLimits = {1, 1}
 BounceHelperBounceZipMover.minimumSize = {16, 16}
-BounceHelperBounceZipMover.placements = {}
 
 BounceHelperBounceZipMover.placements = {
     {
@@ -46,7 +42,11 @@ BounceHelperBounceZipMover.placements = {
         data = {
             width = 16,
             height = 16,
-            moon = false
+            moon = false,
+            spritePath = "objects/zipmover",
+            fillColor = defaultFillColor,
+            ropeColor = defaultRopeColor,
+            ropeLightColor = defaultRopeLightColor
         }
     },
     {
@@ -54,8 +54,24 @@ BounceHelperBounceZipMover.placements = {
         data = {
             width = 16,
             height = 16,
-            moon = true
+            moon = true,
+            spritePath = "objects/zipmover",
+            fillColor = defaultFillColor,
+            ropeColor = defaultRopeColor,
+            ropeLightColor = defaultRopeLightColor
         }
+    }
+}
+
+BounceHelperBounceZipMover.fieldInformation = {
+    fillColor = {
+        fieldType = "color"
+    },
+    ropeColor = {
+        fieldType = "color"
+    },
+    ropeLightColor = {
+        fieldType = "color"
     }
 }
 
@@ -64,7 +80,6 @@ local function getTheme(entity)
 
     if moon then
         return "moon"
-
     else
         return "normal"
     end
@@ -77,8 +92,8 @@ local function addNodeSprites(sprites, entity, cogTexture, centerX, centerY, cen
     nodeCogSprite:setJustification(0.5, 0.5)
 
     local points = {centerX, centerY, centerNodeX, centerNodeY}
-    local leftLine = drawableLine.fromPoints(points, ropeColor, 1)
-    local rightLine = drawableLine.fromPoints(points, ropeColor, 1)
+    local leftLine = drawableLine.fromPoints(points, entity.ropeColor or defaultRopeColor, 1)
+    local rightLine = drawableLine.fromPoints(points, entity.ropeColor or defaultRopeColor, 1)
 
     leftLine:setOffset(0, 4.5)
     rightLine:setOffset(0, -4.5)
@@ -98,7 +113,8 @@ local function addNodeSprites(sprites, entity, cogTexture, centerX, centerY, cen
 end
 
 local function addBlockSprites(sprites, entity, blockTexture, lightsTexture, x, y, width, height)
-    local rectangle = drawableRectangle.fromRectangle("fill", x + 2, y + 2, width - 4, height - 4, centerColor)
+    local rectangle = drawableRectangle.fromRectangle("fill", x + 2, y + 2, width - 4, height - 4,
+        entity.fillColor or defaultFillColor)
 
     local frameNinePatch = drawableNinePatch.fromTexture(blockTexture, blockNinePatchOptions, x, y, width, height)
     local frameSprites = frameNinePatch:getDrawableSprite()
@@ -132,9 +148,10 @@ function BounceHelperBounceZipMover.sprite(room, entity)
 
     local theme = getTheme(entity)
     local themeData = themeTextures[theme] or themeTextures["normal"]
+    local spritePath = entity.spritePath or "objects/zipmover"
 
-    addNodeSprites(sprites, entity, themeData.nodeCog, centerX, centerY, centerNodeX, centerNodeY)
-    addBlockSprites(sprites, entity, themeData.block, themeData.lights, x, y, width, height)
+    addNodeSprites(sprites, entity, spritePath .. themeData.nodeCog, centerX, centerY, centerNodeX, centerNodeY)
+    addBlockSprites(sprites, entity, spritePath .. themeData.block, spritePath .. themeData.lights, x, y, width, height)
 
     return sprites
 end
@@ -150,8 +167,9 @@ function BounceHelperBounceZipMover.selection(room, entity)
 
     local theme = getTheme(entity)
     local themeData = themeTextures[theme] or themeTextures["normal"]
+    local spritePath = entity.spritePath or "objects/zipmover"
 
-    local cogSprite = drawableSprite.fromTexture(themeData.nodeCog, entity)
+    local cogSprite = drawableSprite.fromTexture(spritePath .. themeData.nodeCog, entity)
     local cogWidth, cogHeight = cogSprite.meta.width, cogSprite.meta.height
 
     local mainRectangle = utils.rectangle(x, y, width, height)

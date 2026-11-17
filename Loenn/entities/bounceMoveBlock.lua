@@ -28,7 +28,8 @@ BounceHelperBounceMoveBlock.placements = {
             direction = "Right",
             speed = 60,
             oneUse = false,
-            activationFlag = ""
+            activationFlag = "",
+            spritePath = "objects/BounceHelper/bounceMoveBlock"
         }
     },
     {
@@ -39,7 +40,8 @@ BounceHelperBounceMoveBlock.placements = {
             direction = "Unknown",
             speed = 60,
             oneUse = false,
-            activationFlag = ""
+            activationFlag = "",
+            spritePath = "objects/BounceHelper/bounceMoveBlock"
         }
     }
 }
