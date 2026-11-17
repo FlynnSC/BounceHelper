@@ -7,6 +7,7 @@ bounceHelperBounceTriggerPlacement.placements = {
             enable = true,
             useVanillaThrowBehaviour = false,
             useVanillaPickupBehaviour = false,
+            legacyJumpThroughBehaviour = false,
             disableOnLeave = false
         }
     },
@@ -16,6 +17,7 @@ bounceHelperBounceTriggerPlacement.placements = {
             enable = false,
             useVanillaThrowBehaviour = false,
             useVanillaPickupBehaviour = false,
+            legacyJumpThroughBehaviour = false,
             disableOnLeave = false
         }
     }
