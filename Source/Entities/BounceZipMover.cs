@@ -22,7 +22,7 @@ namespace Celeste.Mod.BounceHelper {
 			private float sparkDirToA;
 			private float sparkDirToB;
 
-			public ZipMoverPathRenderer(BounceZipMover zipMover) {
+			public ZipMoverPathRenderer(BounceZipMover zipMover, string spritePath) {
 				base.Depth = 5000;
 				BounceZipMover = zipMover;
 				from = BounceZipMover.start + new Vector2(BounceZipMover.Width / 2f, BounceZipMover.Height / 2f);
@@ -34,9 +34,9 @@ namespace Celeste.Mod.BounceHelper {
 				sparkDirToA = num + (float)Math.PI - (float)Math.PI / 8f;
 				sparkDirToB = num + (float)Math.PI + (float)Math.PI / 8f;
 				if (zipMover.moon) {
-					cog = GFX.Game["objects/zipmover/moon/cog"];
+					cog = GFX.Game[spritePath + "/moon/cog"];
 				} else {
-					cog = GFX.Game["objects/zipmover/cog"];
+					cog = GFX.Game[spritePath + "/cog"];
 				}
 			}
 
@@ -60,13 +60,13 @@ namespace Celeste.Mod.BounceHelper {
 				Vector2 value = vector.Perpendicular() * 3f;
 				Vector2 value2 = -vector.Perpendicular() * 4f;
 				float rotation = BounceZipMover.percent * (float)Math.PI * 2f;
-				Draw.Line(from + value + offset, to + value + offset, colorOverride.HasValue ? colorOverride.Value : ropeColor);
-				Draw.Line(from + value2 + offset, to + value2 + offset, colorOverride.HasValue ? colorOverride.Value : ropeColor);
+				Draw.Line(from + value + offset, to + value + offset, colorOverride.HasValue ? colorOverride.Value : BounceZipMover.ropeColor);
+				Draw.Line(from + value2 + offset, to + value2 + offset, colorOverride.HasValue ? colorOverride.Value : BounceZipMover.ropeColor);
 				for (float num = 4f - BounceZipMover.percent * (float)Math.PI * 8f % 4f; num < (to - from).Length(); num += 4f) {
 					Vector2 value3 = from + value + vector.Perpendicular() + vector * num;
 					Vector2 value4 = to + value2 - vector * num;
-					Draw.Line(value3 + offset, value3 + vector * 2f + offset, colorOverride.HasValue ? colorOverride.Value : ropeLightColor);
-					Draw.Line(value4 + offset, value4 - vector * 2f + offset, colorOverride.HasValue ? colorOverride.Value : ropeLightColor);
+					Draw.Line(value3 + offset, value3 + vector * 2f + offset, colorOverride.HasValue ? colorOverride.Value : BounceZipMover.ropeLightColor);
+					Draw.Line(value4 + offset, value4 - vector * 2f + offset, colorOverride.HasValue ? colorOverride.Value : BounceZipMover.ropeLightColor);
 				}
 				cog.DrawCentered(from + offset, colorOverride.HasValue ? colorOverride.Value : Color.White, 1f, rotation);
 				cog.DrawCentered(to + offset, colorOverride.HasValue ? colorOverride.Value : Color.White, 1f, rotation);
@@ -82,6 +82,7 @@ namespace Celeste.Mod.BounceHelper {
 		private bool drawBlackBorder;
 
 		public bool moon;
+		private string spritePath;
 
 		private Vector2 start;
 		private Vector2 target;
@@ -90,31 +91,36 @@ namespace Celeste.Mod.BounceHelper {
 		public bool triggered = false;
 		private Vector2 zipLiftSpeed = Vector2.Zero;
 
-		private static readonly Color ropeColor = Calc.HexToColor("663931");
-		private static readonly Color ropeLightColor = Calc.HexToColor("9b6157");
+		private Color fillColor;
+		private Color ropeColor;
+		private Color ropeLightColor;
 
 		private SoundSource sfx = new SoundSource();
 
-		public BounceZipMover(Vector2 position, int width, int height, Vector2 target, bool moon)
+		public BounceZipMover(Vector2 position, int width, int height, Vector2 target, bool moon, string spritePath, Color fillColor, Color ropeColor, Color ropeLightColor)
 			: base(position, width, height, safe: false) {
 			base.Depth = -9999;
 			start = Position;
 			this.target = target;
 			this.moon = moon;
+			this.spritePath = spritePath;
+			this.fillColor = fillColor;
+			this.ropeColor = ropeColor;
+			this.ropeLightColor = ropeLightColor;
 			Add(new Coroutine(Sequence()));
 			Add(new LightOcclude());
 			string path;
 			string id;
 			string key;
 			if (moon) {
-				path = "objects/zipmover/moon/light";
-				id = "objects/zipmover/moon/block";
-				key = "objects/zipmover/moon/innercog";
+				path = spritePath + "/moon/light";
+				id = spritePath + "/moon/block";
+				key = spritePath + "/moon/innercog";
 				drawBlackBorder = false;
 			} else {
-				path = "objects/zipmover/light";
-				id = "objects/zipmover/block";
-				key = "objects/zipmover/innercog";
+				path = spritePath + "/light";
+				id = spritePath + "/block";
+				key = spritePath + "/innercog";
 				drawBlackBorder = true;
 			}
 			innerCogs = GFX.Game.GetAtlasSubtextures(key);
@@ -141,12 +147,13 @@ namespace Celeste.Mod.BounceHelper {
 		}
 
 		public BounceZipMover(EntityData data, Vector2 offset)
-			: this(data.Position + offset, data.Width, data.Height, data.Nodes[0] + offset, data.Bool("moon", false)) {
+			: this(data.Position + offset, data.Width, data.Height, data.Nodes[0] + offset, data.Bool("moon", false), data.String("spritePath", "objects/zipmover"),
+			data.HexColor("fillColor", Color.Black), data.HexColor("ropeColor", Calc.HexToColor("663931")), data.HexColor("ropeLightColor", Calc.HexToColor("9b6157"))) {
 		}
 
 		public override void Added(Scene scene) {
 			base.Added(scene);
-			scene.Add(pathRenderer = new ZipMoverPathRenderer(this));
+			scene.Add(pathRenderer = new ZipMoverPathRenderer(this, spritePath));
 		}
 
 		public override void Removed(Scene scene) {
@@ -170,7 +177,7 @@ namespace Celeste.Mod.BounceHelper {
 		public override void Render() {
 			Vector2 position = Position;
 			Position += base.Shake;
-			Draw.Rect(base.X + 1f, base.Y + 1f, base.Width - 2f, base.Height - 2f, Color.Black);
+			Draw.Rect(base.X + 1f, base.Y + 1f, base.Width - 2f, base.Height - 2f, fillColor);
 			int num = 1;
 			float num2 = 0f;
 			int count = innerCogs.Count;
