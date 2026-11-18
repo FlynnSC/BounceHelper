@@ -75,3 +75,4 @@ triggers.BounceHelper/BounceHelperTrigger.placements.name.disable=Bounce Helper 
 triggers.BounceHelper/BounceHelperTrigger.placements.description.normal=Enables Bounce Helper's Bounce Mode, needed for everything Bounce Helper.
 triggers.BounceHelper/BounceHelperTrigger.placements.description.disable=Disables Bounce Helper's Bounce Mode, turning everything back to normal.
 triggers.BounceHelper/BounceHelperTrigger.attributes.description.enable=Whether to enable/disable Bounce Mode upon entering the trigger.
+triggers.BounceHelper/BounceHelperTrigger.attributes.description.legacyJumpThroughBehaviour=If true, you cannot perform Ceiling Bounces, Hole Bounces or Jelly Corner Bounces on jump throughs and when bouncing on a jump through, it only every applies the player's lift boost, not its own.

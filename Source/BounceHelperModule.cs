@@ -24,6 +24,7 @@ namespace Celeste.Mod.BounceHelper
         private static bool isEnabled => (session != null && session.GetFlag("bounceModeEnabled")) || Settings.ForceBounceMode;
         private static bool useVanillaThrowBehaviour => (session != null && session.GetFlag("bounceModeUseVanillaThrowBehaviour"));
         private static bool useVanillaPickupBehaviour => (session != null && session.GetFlag("bounceModeUseVanillaPickupBehaviour"));
+        private static bool legacyJumpThruBehaviour => (session != null && session.GetFlag("bounceModeLegacyJumpThruBehaviour"));
 
         #region Vanilla constants
         private const float DashSpeed = 240f;
@@ -166,6 +167,8 @@ namespace Celeste.Mod.BounceHelper
         public override void Initialize()
         {
             base.Initialize();
+            GravityHelperImports.Initialize();
+            CollideCheckHelper.Initialize();
 
             #region Dream bounce particles
             ParticleType particle = new ParticleType(BounceBlock.P_FireBreak);
@@ -231,15 +234,31 @@ namespace Celeste.Mod.BounceHelper
         private static MethodInfo playerSuperJump = typeof(Player).GetMethod("SuperJump", BindingFlags.Instance | BindingFlags.NonPublic);
         private static MethodInfo playerSuperWallJump = typeof(Player).GetMethod("SuperWallJump", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        private Entity CollideFirstSolidOrJumpThru(Player player, Vector2 offset)
+        {
+            return legacyJumpThruBehaviour ? player.CollideFirst<Solid>(player.Position + offset) : player.FindSolidOrJumpthru(offset);
+        }
+
+        private bool CollideCheckSolidOrJumpThru(Player player, Vector2 offset)
+        {
+            return CollideFirstSolidOrJumpThru(player, offset) != null;
+        }
+
+        private bool IsPlayerInverted()
+        {
+            return GravityHelperImports.IsPlayerInverted?.Invoke() ?? false;
+        }
+
         private void bounce(Player player, Vector2 bounceSpeed, int bounceStrength, Vector2 surfaceDir, bool dreamRipple = false, int wallCheckDistance = WallJumpCheckDist)
         {
             var playerData = getPlayerData(player);
 
-            Vector2 liftSpeed = player.LiftSpeed;
-            Solid bouncedSolid = player.CollideFirst<Solid>(player.Position + surfaceDir * wallCheckDistance);
-            if (bouncedSolid != null && bouncedSolid.LiftSpeed != Vector2.Zero)
+            surfaceDir.Y *= IsPlayerInverted() ? -1 : 1;
+
+            Vector2 liftSpeed = CollideFirstSolidOrJumpThru(player, surfaceDir * wallCheckDistance)?.GetFieldValue<Vector2>("LiftSpeed") ?? Vector2.Zero;
+            if (liftSpeed == Vector2.Zero)
             {
-                liftSpeed = bouncedSolid.LiftSpeed;
+                liftSpeed = player.LiftSpeed;
             }
             liftSpeed.X = Math.Min(Math.Abs(liftSpeed.X), LiftXCap) * Math.Sign(liftSpeed.X);
             liftSpeed.Y = Math.Min(Math.Abs(liftSpeed.Y), LiftYCap) * Math.Sign(liftSpeed.Y);
@@ -352,14 +371,15 @@ namespace Celeste.Mod.BounceHelper
             if (!cornerBounced)
             {
                 Vector2 slashOffset = Vector2.Normalize(player.Speed) * 12;
+                slashOffset.Y *= IsPlayerInverted() ? -1 : 1;
                 SlashFx.Burst(player.Center + slashOffset, player.Speed.Angle());
                 player.Sprite.Scale = Vector2.One;
-                Vector2 scale = new Vector2(Math.Abs(player.Sprite.Scale.X), player.Sprite.Scale.Y);
+                Vector2 scale = new Vector2(Math.Abs(player.Sprite.Scale.X), player.Sprite.Scale.Y * (IsPlayerInverted() ? -1 : 1));
                 TrailManager.Add(player, scale, bounceColor);
             }
             else
             {
-                if (player.CollideCheck<Solid>(player.Position - surfaceDir))
+                if (CollideCheckSolidOrJumpThru(player, -surfaceDir * wallCheckDistance))
                 {
                     player.Speed.X = 0;
                     holeBounced = true;
@@ -466,7 +486,7 @@ namespace Celeste.Mod.BounceHelper
                     jellyfishBounceTimer = 0f;
                     state = Player.StNormal;
                 }
-                else if (player.DashDir == -Vector2.UnitY && player.CollideCheck<Solid>(player.Position - Vector2.UnitY))
+                else if (player.DashDir == -Vector2.UnitY && CollideCheckSolidOrJumpThru(player, IsPlayerInverted() ? Vector2.UnitY : -Vector2.UnitY))
                 {
                     ceilingBounce(player);
                     jellyfishBounceTimer = 0f;
@@ -687,8 +707,8 @@ namespace Celeste.Mod.BounceHelper
             {
                 if (jellyfishBounceDir == Vector2.UnitY)
                 {
-                    bool wallRight = player.CollideCheck<Solid>(player.Position + WallJumpCheckDist * Vector2.UnitX);
-                    bool wallLeft = player.CollideCheck<Solid>(player.Position - WallJumpCheckDist * Vector2.UnitX);
+                    bool wallRight = CollideCheckSolidOrJumpThru(player, WallJumpCheckDist * Vector2.UnitX);
+                    bool wallLeft = CollideCheckSolidOrJumpThru(player, -WallJumpCheckDist * Vector2.UnitX);
                     if (wallRight)
                     {
                         if (!wallLeft)
@@ -725,7 +745,7 @@ namespace Celeste.Mod.BounceHelper
             {
                 if (state == Player.StNormal && Input.Jump.Pressed && canJellyfishBounce(player))
                 {
-                    if (player.CollideCheck<Solid>(player.Position - Vector2.UnitY))
+                    if (CollideCheckSolidOrJumpThru(player, IsPlayerInverted() ? Vector2.UnitY : -Vector2.UnitY))
                     {
                         ceilingBounce(player);
                     }
