@@ -8,20 +8,20 @@ namespace Celeste.Mod.BounceHelper;
 
 public static class CollideCheckHelper
 {
-    public static Entity FindSolidOrJumpthru(this Entity entity, Vector2 direction)
+    public static Entity FindSolidOrJumpthru(this Entity entity, Vector2 offset)
     {
-        Vector2 position = entity.Position + direction;
+        Vector2 position = entity.Position + offset;
         if (entity.CollideFirst<Solid>(position) is Entity result)
         {
             return result;
         }
 
-        if (direction == Vector2.Zero)
+        if (offset == Vector2.Zero)
         {
             return null;
         }
 
-        Direction expectedJumpThruDir = GetDir(direction);
+        Direction expectedJumpThruDir = GetDir(offset);
         foreach (Type jumpThruType in jumpThruTypes)
         {
             if (jumpThruTypeDirections.ContainsKey(jumpThruType) && (jumpThruTypeDirections[jumpThruType] & expectedJumpThruDir) == Direction.Zero)

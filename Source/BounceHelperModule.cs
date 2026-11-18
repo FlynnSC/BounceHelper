@@ -24,7 +24,7 @@ namespace Celeste.Mod.BounceHelper
         private static bool isEnabled => (session != null && session.GetFlag("bounceModeEnabled")) || Settings.ForceBounceMode;
         private static bool useVanillaThrowBehaviour => (session != null && session.GetFlag("bounceModeUseVanillaThrowBehaviour"));
         private static bool useVanillaPickupBehaviour => (session != null && session.GetFlag("bounceModeUseVanillaPickupBehaviour"));
-        private static bool legacyJumpThruBehaviour => (session != null && session.GetFlag("legacyJumpThruBehaviour"));
+        private static bool legacyJumpThruBehaviour => (session != null && session.GetFlag("bounceModeLegacyJumpThruBehaviour"));
 
         #region Vanilla constants
         private const float DashSpeed = 240f;
@@ -234,14 +234,14 @@ namespace Celeste.Mod.BounceHelper
         private static MethodInfo playerSuperJump = typeof(Player).GetMethod("SuperJump", BindingFlags.Instance | BindingFlags.NonPublic);
         private static MethodInfo playerSuperWallJump = typeof(Player).GetMethod("SuperWallJump", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private Entity CollideFirstSolidOrJumpThru(Player player, Vector2 direction)
+        private Entity CollideFirstSolidOrJumpThru(Player player, Vector2 offset)
         {
-            return legacyJumpThruBehaviour ? player.CollideFirst<Solid>(player.Position + direction) : player.FindSolidOrJumpthru(direction);
+            return legacyJumpThruBehaviour ? player.CollideFirst<Solid>(player.Position + offset) : player.FindSolidOrJumpthru(offset);
         }
 
-        private bool CollideCheckSolidOrJumpThru(Player player, Vector2 direction)
+        private bool CollideCheckSolidOrJumpThru(Player player, Vector2 offset)
         {
-            return CollideFirstSolidOrJumpThru(player, direction) != null;
+            return CollideFirstSolidOrJumpThru(player, offset) != null;
         }
 
         private bool IsPlayerInverted()

@@ -24,7 +24,7 @@ namespace Celeste.Mod.BounceHelper {
             SceneAs<Level>().Session.SetFlag("bounceModeEnabled", enable);
             SceneAs<Level>().Session.SetFlag("bounceModeUseVanillaThrowBehaviour", useVanillaThrowBehaviour);
             SceneAs<Level>().Session.SetFlag("bounceModeUseVanillaPickupBehaviour", useVanillaPickupBehaviour);
-            SceneAs<Level>().Session.SetFlag("legacyJumpThruBehaviour", legacyJumpThruBehaviour);
+            SceneAs<Level>().Session.SetFlag("bounceModeLegacyJumpThruBehaviour", legacyJumpThruBehaviour);
         }
 
         public override void OnLeave(Player player) {
